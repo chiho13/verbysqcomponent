@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import "./index.css";
 
 import SampleAudioVoice from "./components/SampleAudioVoice";
+import { useCallback } from "react/cjs/react.production.min";
 
 function App() {
   const [selectedItemText, setSelectedItemText] =
@@ -20,6 +21,8 @@ function App() {
   const voicesDropdownRef = React.useRef(null);
 
   const sampleAudioRef = React.useRef(null);
+
+  const [audioIsLoading, setAudioIsLoading] = React.useState(false);
 
   function handleVoicesDropdownClick(event) {
     event.preventDefault();
@@ -81,6 +84,7 @@ function App() {
   function generateAudio(event) {
     event.preventDefault();
 
+    setAudioIsLoading(true);
     const requestBody = {
       text: enteredText,
       voice_settings: {
@@ -120,6 +124,16 @@ function App() {
     };
   }, [voicesDropdownRef]);
 
+  const [isDisabled, setIsDisabled] = React.useState(true);
+
+  React.useEffect(() => {
+    if (selectedVoiceId && enteredText) {
+      setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
+    }
+  }, [selectedVoiceId, enteredText]);
+
   const MemoizedSampleAudioVoice = React.memo(SampleAudioVoice);
 
   return (
@@ -127,7 +141,7 @@ function App() {
       <div className="dropdown">
         <div>
           <button
-            className="dropdown-toggle inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-100"
+            className="dropdown-toggle inline-flex justify-center rounded-md border-2 border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-opacity-50 focus-visible:outline-none"
             aria-expanded="true"
             aria-haspopup="true"
             id="voices-dropdown"
@@ -151,7 +165,7 @@ function App() {
 
         <div
           id="menuItems"
-          className="dropdown-menu absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+          className="dropdown-menu absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="voices-dropdown"
@@ -199,7 +213,7 @@ function App() {
         className="block mb-4"
         style={{ display: "none" }}
       ></audio>
-      <form id="text-form" onSubmit={generateAudio}>
+      <form id="text-form">
         <label htmlFor="text" className="block mb-2">
           Enter text (max. 1000 characters):
         </label>
@@ -209,14 +223,47 @@ function App() {
           rows="8"
           cols="50"
           maxLength="1000"
-          className="block w-full mb-4 bg-gray-100 p-4 resize-none"
+          className="textarea_input block w-full mb-4 bg-gray-100 p-4 resize-none border-gray-500 border-2 rounded-md focus:outline-none focus-visible:border-orange-500"
           onChange={handleTextChange}
         ></textarea>
-        <input
-          type="submit"
-          value="Generate"
-          class="bg-white hover:bg-orange-500 hover:text-white border border-orange-500 text-orange-500 font-bold py-2 px-4 rounded cursor-pointer transition duration-300 ease-in-out"
-        />
+        <button
+          class={`generateAudio flex items-center ${isDisabled && "disabled"}`}
+          onClick={generateAudio}
+          disabled={audioIsLoading}
+        >
+          {audioIsLoading ? (
+            <>
+              <svg
+                aria-hidden="true"
+                role="status"
+                class="spinning-icon inline w-4 h-4 mr-3 text-gray-200 animate-spin dark:text-gray-600"
+                viewBox="0 0 100 100"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill="#aaaaaa"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  d="M73,50c0-12.7-10.3-23-23-23S27,37.3,27,50 M30.9,50c0-10.5,8.5-19.1,19.1-19.1S69.1,39.5,69.1,50"
+                >
+                  <animateTransform
+                    attributeName="transform"
+                    attributeType="XML"
+                    type="rotate"
+                    dur="1s"
+                    from="0 50 50"
+                    to="360 50 50"
+                    repeatCount="indefinite"
+                  />
+                </path>
+              </svg>
+              <div>Loading...</div>
+            </>
+          ) : (
+            <div>Generate</div>
+          )}
+        </button>
       </form>
       <div id="download-container" className="mt-4"></div>
     </div>

@@ -15,7 +15,12 @@ module.exports = {
           900: "#9A3412",
         },
       },
+      borderWidth: ["focus-visible"],
     },
   },
-  plugins: [],
+  plugins: [
+    require("@tailwindcss/forms")({
+      strategy: "class",
+    }),
+  ],
 };
