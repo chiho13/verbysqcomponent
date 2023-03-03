@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.dropdown {
+  position: relative;
+  margin-bottom: 20px;
+}
+/* Dropdown Button */
+.dropdown-menu {
+  position: absolute;
+  z-index: 1;
+  display: none;
+  background-color: white;
+}
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {
+  display: block;
+}
+
+.play-icon,
+.stop-icon {
+  cursor: pointer;
+}
+
+.play-icon:hover path,
+.stop-icon:hover path {
+  stroke: #f07d3b;
+  transition: stroke 0.3s ease;
+}
+
+.play-icon path,
+.stop-icon path {
+  pointer-events: none;
+}
+
+.voiceItemContainer {
+  padding-left: 10px;
+}
+.voiceItemContainer:hover {
+  background-color: #eeeeee;
+  transition: all 0.3s ease;
+}
