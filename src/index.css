@@ -23,6 +23,11 @@
   cursor: pointer;
 }
 
+.play-icon path,
+.stop-icon path {
+  stroke: #777777;
+}
+
 .play-icon:hover path,
 .stop-icon:hover path {
   stroke: #f07d3b;
@@ -67,7 +72,7 @@
 }
 
 .generateAudio.disabled {
-  opacity: 0.5;
+  opacity: 0.3;
   pointer-events: none;
 }
 
