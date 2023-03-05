@@ -1,5 +1,6 @@
 import { useState, useEffect, memo, useRef } from "react";
-import SampleAudioVoice from "./SampleAudioVoice";
+import SampleAudioVoice from "../SampleAudioVoice";
+import { VoiceDropdownStyle } from "./style";
 
 function VoiceDropdown({ setSelectedVoiceId }) {
   const voicesDropdownRef = useRef(null);
@@ -18,6 +19,7 @@ function VoiceDropdown({ setSelectedVoiceId }) {
 
   useEffect(() => {
     const handleClickOutsideDropdown = (event) => {
+      console.log(event.target.tagName !== "svg");
       if (
         voicesDropdownRef.current &&
         !voicesDropdownRef.current.contains(event.target) &&
@@ -92,7 +94,7 @@ function VoiceDropdown({ setSelectedVoiceId }) {
   }
 
   return (
-    <div className="dropdown">
+    <VoiceDropdownStyle>
       <div>
         <button
           className="dropdown-toggle inline-flex justify-center rounded-md border-2 border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-opacity-50 focus-visible:outline-none"
@@ -119,37 +121,54 @@ function VoiceDropdown({ setSelectedVoiceId }) {
 
       <div
         id="menuItems"
-        className="dropdown-menu absolute left-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
+        className="dropdown-menu absolute left-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
         role="menu"
         aria-orientation="vertical"
         aria-labelledby="voices-dropdown"
         tabIndex="-1"
         ref={voicesDropdownRef}
       >
-        {voices.map((voice, index) => (
-          <div class="flex py-2 voiceItemContainer">
-            <MemoizedSampleAudioVoice
-              key={index}
-              previewUrl={voice.sample}
-              setAudioElement={setSampleAudioElement}
-              isPlaying={playingStates[index]}
-              playAudio={() => playAudio(index)}
-              stopAudio={() => stopAudio(index)}
-            />
-            <a
-              href="#"
-              className="flex items-center text-gray-700 block px-2 py-2 text-sm w-full"
-              role="menuitem"
-              tabIndex="-1"
-              id="single-menu-item"
-              onClick={(e) => handleVoiceSelection(voice.voiceId, voice.name)}
-            >
-              <span className="voiceNameItem">{voice.name}</span>
-            </a>
-          </div>
-        ))}
+        <table class="w-full table-auto border-collapse">
+          <thead class="w-full p-4 border-collapse">
+            <tr class="voiceTitles">
+              <th class="nameHeader text-left">Name</th>
+              <th class="text-left">Accent</th>
+              <th class="text-left">Age</th>
+              <th class="text-left">Style</th>
+            </tr>
+          </thead>
+          <tbody class="w-full">
+            {voices.map((voice, index) => (
+              <tr
+                key={index}
+                onClick={(e) => handleVoiceSelection(voice.voiceId, voice.name)}
+                className="voiceItemContainer"
+              >
+                <td class="voiceSampleAndName flex items-center">
+                  <MemoizedSampleAudioVoice
+                    previewUrl={voice.sample}
+                    setAudioElement={setSampleAudioElement}
+                    isPlaying={playingStates[index]}
+                    playAudio={(e) => {
+                      e.stopPropagation();
+                      playAudio(index);
+                    }}
+                    stopAudio={(e) => {
+                      e.stopPropagation();
+                      stopAudio(index);
+                    }}
+                  />
+                  {voice.name}
+                </td>
+                <td>{voice.accent}</td>
+                <td>{voice.age}</td>
+                <td>{voice.style}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-    </div>
+    </VoiceDropdownStyle>
   );
 }
 

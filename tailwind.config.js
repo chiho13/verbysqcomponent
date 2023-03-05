@@ -17,6 +17,7 @@ module.exports = {
       },
       borderWidth: ["focus-visible"],
     },
+    textAlign: ["responsive", "hover", "focus"],
   },
   plugins: [
     require("@tailwindcss/forms")({

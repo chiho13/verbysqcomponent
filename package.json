@@ -37,6 +37,7 @@
     "react": "^17.0.2",
     "react-audio-player": "^0.17.0",
     "react-dom": "^17.0.2",
+    "styled-components": "^5.3.8",
     "tailwindcss": "^3.0.14"
   },
   "htmlnano": {
