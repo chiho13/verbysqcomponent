@@ -10,7 +10,13 @@ export const VoiceDropdownStyle = styled.div`
     display: none;
     background-color: white;
     max-height: 500px;
-    overflow-y: auto;
+    overflow-y: scroll;
+    border: 2px solid #ccc;
+  }
+
+  .dropdown_table {
+    border-collapse: separate;
+    border-spacing: 0;
   }
 
   .show {
@@ -41,9 +47,18 @@ export const VoiceDropdownStyle = styled.div`
     pointer-events: none;
   }
 
+  .voiceItem_wrapperMargin {
+    margin-top: 10px;
+    display: contents;
+  }
+
   .voiceItemContainer {
     padding-left: 10px;
     cursor: pointer;
+
+    &:first-child {
+      margin-top: 10px;
+    }
   }
   .voiceItemContainer:hover {
     background-color: #eeeeee;

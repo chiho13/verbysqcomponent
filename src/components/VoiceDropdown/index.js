@@ -138,8 +138,8 @@ function VoiceDropdown({ setSelectedVoiceId }) {
         tabIndex="-1"
         ref={voicesDropdownRef}
       >
-        <table class="w-full table-auto border-collapse">
-          <thead class="w-full p-4 border-collapse">
+        <table class="dropdown_table w-full table-auto">
+          <thead class="w-full p-4">
             <tr class="voiceTitles">
               <th class="nameHeader text-left">Name</th>
               <th class="text-left">Accent</th>
@@ -147,35 +147,39 @@ function VoiceDropdown({ setSelectedVoiceId }) {
               <th class="text-left">Style</th>
             </tr>
           </thead>
-          <tbody class="w-full">
-            {voices.map((voice, index) => (
-              <tr
-                key={index}
-                onClick={(e) => handleVoiceSelection(voice.voiceId, voice.name)}
-                className="voiceItemContainer"
-              >
-                <td class="voiceSampleAndName flex items-center">
-                  <MemoizedSampleAudioVoice
-                    previewUrl={voice.sample}
-                    setAudioElement={setSampleAudioElement}
-                    isPlaying={playingStates[index]}
-                    playAudio={(e) => {
-                      e.stopPropagation();
-                      playAudio(index);
-                    }}
-                    stopAudio={(e) => {
-                      e.stopPropagation();
-                      stopAudio(index);
-                    }}
-                  />
-                  {voice.name}
-                </td>
-                <td>{voice.accent}</td>
-                <td>{voice.age}</td>
-                <td>{voice.style}</td>
-              </tr>
-            ))}
-          </tbody>
+          <div class="voiceItem_wrapperMargin">
+            <tbody class="w-full">
+              {voices.map((voice, index) => (
+                <tr
+                  key={index}
+                  onClick={(e) =>
+                    handleVoiceSelection(voice.voiceId, voice.name)
+                  }
+                  className="voiceItemContainer"
+                >
+                  <td class="voiceSampleAndName flex items-center">
+                    <MemoizedSampleAudioVoice
+                      previewUrl={voice.sample}
+                      setAudioElement={setSampleAudioElement}
+                      isPlaying={playingStates[index]}
+                      playAudio={(e) => {
+                        e.stopPropagation();
+                        playAudio(index);
+                      }}
+                      stopAudio={(e) => {
+                        e.stopPropagation();
+                        stopAudio(index);
+                      }}
+                    />
+                    {voice.name}
+                  </td>
+                  <td>{voice.accent}</td>
+                  <td>{voice.age}</td>
+                  <td>{voice.style}</td>
+                </tr>
+              ))}
+            </tbody>
+          </div>
         </table>
       </div>
     </VoiceDropdownStyle>
