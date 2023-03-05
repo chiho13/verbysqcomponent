@@ -16,7 +16,7 @@ function SampleAudioVoice({
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="stop-icon w-10 h-10 mr-2"
+          class="stop-icon w-10 h-10"
           onClick={stopAudio}
         >
           <path
@@ -37,7 +37,7 @@ function SampleAudioVoice({
           viewBox="0 0 24 24"
           stroke-width="1.5"
           stroke="currentColor"
-          class="play-icon w-10 h-10 mr-2"
+          class="play-icon w-10 h-10"
           data-preview-url="${voice.preview_url}"
           onClick={playAudio}
         >

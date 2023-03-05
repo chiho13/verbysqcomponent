@@ -60,7 +60,17 @@ function VoiceDropdown({ setSelectedVoiceId }) {
 
   function playAudio(index) {
     if (sampleAudioElement) {
+      sampleAudioElement.currentTime = 0;
       sampleAudioElement.pause();
+
+      const prevIndex = playingStates.findIndex((state) => state);
+      if (prevIndex !== -1) {
+        setPlayingStates((prevStates) => {
+          const newStates = [...prevStates];
+          newStates[prevIndex] = false;
+          return newStates;
+        });
+      }
     }
     const newAudioElement = new Audio(voices[index].sample);
     newAudioElement.play();

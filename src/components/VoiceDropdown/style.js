@@ -22,6 +22,7 @@ export const VoiceDropdownStyle = styled.div`
     cursor: pointer;
     width: 34px;
     height: 34px;
+    margin-right: 20px;
   }
 
   .play-icon path,
@@ -50,7 +51,7 @@ export const VoiceDropdownStyle = styled.div`
   }
 
   .nameHeader {
-    text-indent: 52px;
+    text-indent: 64px;
   }
 
   thead {
@@ -68,8 +69,15 @@ export const VoiceDropdownStyle = styled.div`
   }
 
   .voiceTitles {
+    position: sticky;
+    top: 0;
+    background: #ffffff;
+    z-index: 1000;
+
     th {
       padding-top: 20px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #333333;
     }
   }
 
