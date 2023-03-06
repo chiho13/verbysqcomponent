@@ -178,10 +178,6 @@ function App() {
         </button>
       </form>
       <div id="download-container" className="mt-4"></div>
-      {/* {audioUrl && (
-        <audio src={audioUrl} controls crossOrigin="anonymous" autoPlay />
-      )} */}
-
       {!audioIsLoading && generatedAudio && (
         <AudioPlayer generatedAudio={generatedAudio} />
       )}

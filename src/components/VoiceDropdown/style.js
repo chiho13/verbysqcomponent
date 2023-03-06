@@ -55,10 +55,8 @@ export const VoiceDropdownStyle = styled.div`
   .voiceItemContainer {
     padding-left: 10px;
     cursor: pointer;
-
-    &:first-child {
-      margin-top: 10px;
-    }
+    position: relative;
+    top: 10px;
   }
   .voiceItemContainer:hover {
     background-color: #eeeeee;
