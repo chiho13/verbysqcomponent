@@ -3,13 +3,15 @@ import SampleAudioVoice from "../SampleAudioVoice";
 import { VoiceDropdownStyle } from "./style";
 import Filter from "../Filter";
 import Dropdown from "../Dropdown";
+import ChevronDown from "../../icons/ChevronDown";
 
 function VoiceDropdown({ setSelectedVoiceId }) {
   const voicesDropdownRef = useRef({});
-
+  const accentFilterRef = useRef({});
   const [selectedItemText, setSelectedItemText] = useState("Choose a voice");
 
   const [voices, setVoices] = useState([]);
+  const [filteredVoices, setFilteredVoices] = useState([]);
 
   const [accents, setAccents] = useState([]);
 
@@ -27,6 +29,7 @@ function VoiceDropdown({ setSelectedVoiceId }) {
       .then((data) => {
         setVoices(data.voices);
 
+        console.log(voices);
         const getAccents = getUniqueAccents(data.voices);
         console.log(getAccents);
         setAccents(getAccents);
@@ -93,55 +96,109 @@ function VoiceDropdown({ setSelectedVoiceId }) {
   }
 
   function onFilterChange(option) {
-    console.log(option);
+    if (option === "All") {
+      // If "All" is selected, show all voices
+      setFilteredVoices([]);
+    } else {
+      // Otherwise, filter the voices array by the selected accent value
+      const filtered = voices.filter(
+        (voice) => voice.accent === option.toLowerCase()
+      );
+      setFilteredVoices(filtered);
+    }
   }
+
+  const capitalize = (str) => str && str.charAt(0).toUpperCase() + str.slice(1);
 
   return (
     <VoiceDropdownStyle>
-      <Dropdown selectedItemText={selectedItemText} ref={voicesDropdownRef}>
+      <Dropdown
+        selectedItemText={selectedItemText}
+        ref={voicesDropdownRef}
+        icon={<ChevronDown />}
+        minHeight={400}
+      >
         <div>
-          <Filter options={accents} onChange={onFilterChange} />
-
           <table class="dropdown_table w-full table-auto">
             <thead class="w-full p-4">
               <tr class="voiceTitles">
                 <th class="nameHeader text-left">Name</th>
-                <th class="text-left">Accent</th>
+                <th class="text-left">
+                  <Filter
+                    options={accents}
+                    defaultTitle="Accent"
+                    onChange={onFilterChange}
+                    ref={accentFilterRef}
+                  />
+                </th>
                 <th class="text-left">Age</th>
                 <th class="text-left">Style</th>
+                <th class="text-left">Tempo</th>
               </tr>
             </thead>
 
             <tbody class="w-full">
-              {voices.map((voice, index) => (
-                <tr
-                  key={index}
-                  onClick={(e) =>
-                    handleVoiceSelection(voice.voiceId, voice.name)
-                  }
-                  className="voiceItemContainer"
-                >
-                  <td class="voiceSampleAndName flex items-center">
-                    <MemoizedSampleAudioVoice
-                      previewUrl={voice.sample}
-                      setAudioElement={setSampleAudioElement}
-                      isPlaying={playingStates[index]}
-                      playAudio={(e) => {
-                        e.stopPropagation();
-                        playAudio(index);
-                      }}
-                      stopAudio={(e) => {
-                        e.stopPropagation();
-                        stopAudio(index);
-                      }}
-                    />
-                    {voice.name}
-                  </td>
-                  <td>{voice.accent}</td>
-                  <td>{voice.age}</td>
-                  <td>{voice.style}</td>
-                </tr>
-              ))}
+              {filteredVoices.length
+                ? filteredVoices.map((voice, index) => (
+                    <tr
+                      key={index}
+                      onClick={(e) =>
+                        handleVoiceSelection(voice.voiceId, voice.name)
+                      }
+                      className="voiceItemContainer"
+                    >
+                      <td class="voiceSampleAndName flex items-center">
+                        <MemoizedSampleAudioVoice
+                          previewUrl={voice.sample}
+                          setAudioElement={setSampleAudioElement}
+                          isPlaying={playingStates[index]}
+                          playAudio={(e) => {
+                            e.stopPropagation();
+                            playAudio(index);
+                          }}
+                          stopAudio={(e) => {
+                            e.stopPropagation();
+                            stopAudio(index);
+                          }}
+                        />
+                        {voice.name}
+                      </td>
+                      <td>{capitalize(voice.accent)}</td>
+                      <td>{capitalize(voice.age)}</td>
+                      <td>{capitalize(voice.style)}</td>
+                      <td>{capitalize(voice.tempo)}</td>
+                    </tr>
+                  ))
+                : voices.map((voice, index) => (
+                    <tr
+                      key={index}
+                      onClick={(e) =>
+                        handleVoiceSelection(voice.voiceId, voice.name)
+                      }
+                      className="voiceItemContainer"
+                    >
+                      <td class="voiceSampleAndName flex items-center">
+                        <MemoizedSampleAudioVoice
+                          previewUrl={voice.sample}
+                          setAudioElement={setSampleAudioElement}
+                          isPlaying={playingStates[index]}
+                          playAudio={(e) => {
+                            e.stopPropagation();
+                            playAudio(index);
+                          }}
+                          stopAudio={(e) => {
+                            e.stopPropagation();
+                            stopAudio(index);
+                          }}
+                        />
+                        {voice.name}
+                      </td>
+                      <td>{capitalize(voice.accent)}</td>
+                      <td>{capitalize(voice.age)}</td>
+                      <td>{capitalize(voice.style)}</td>
+                      <td>{capitalize(voice.tempo)}</td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>

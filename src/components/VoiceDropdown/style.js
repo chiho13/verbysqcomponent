@@ -5,13 +5,9 @@ export const VoiceDropdownStyle = styled.div`
   margin-bottom: 20px;
 
   .dropdown-menu {
-    position: absolute;
-    z-index: 1;
-    display: none;
-    background-color: white;
+    min-height: 400px;
     max-height: 500px;
     overflow-y: scroll;
-    border: 2px solid #ccc;
   }
 
   .dropdown_table {
@@ -85,12 +81,13 @@ export const VoiceDropdownStyle = styled.div`
     position: sticky;
     top: 0;
     background: #ffffff;
-    z-index: 1000;
+    z-index: 100;
 
     th {
       padding-top: 20px;
       padding-bottom: 20px;
       border-bottom: 2px solid #333333;
+      min-width: 100px;
     }
   }
 
