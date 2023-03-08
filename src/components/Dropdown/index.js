@@ -1,29 +1,60 @@
-import React, { useEffect, forwardRef } from "react";
+import React, {
+  useEffect,
+  forwardRef,
+  useState,
+  useContext,
+  useCallback,
+} from "react";
 import { DropdownStyle } from "./style";
+import DropdownContext from "../../contexts/DropdownContextProvider/DropdownContext";
 
-function Dropdown({ selectedItemText, children, icon, minHeight = 0 }, ref) {
-  useEffect(() => {
-    const handleClickOutsideDropdown = (event) => {
+function Dropdown(
+  { id, selectedItemText, children, icon, minHeight = 0 },
+  ref
+) {
+  const [activeChildDropdown, setActiveChildDropdown] = useState(null);
+
+  const handleClickOutsideDropdown = useCallback(
+    (event) => {
       if (
         ref.current &&
         !ref.current.contains(event.target) &&
         event.target.tagName !== "svg"
       ) {
         ref.current.classList.remove("show");
+        setActiveChildDropdown(null);
       }
-    };
+    },
+    [ref]
+  );
 
+  useEffect(() => {
     document.addEventListener("click", handleClickOutsideDropdown);
 
     return () => {
       document.removeEventListener("click", handleClickOutsideDropdown);
     };
-  }, [ref]);
+  }, [handleClickOutsideDropdown]);
 
   function handleVoicesDropdownClick(event) {
     event.preventDefault();
     event.stopPropagation();
-    ref.current.classList.toggle("show");
+
+    setActiveChildDropdown((prevState) => {
+      // Close all other child Dropdown components
+      const dropdowns = document.querySelectorAll(
+        ".voiceTitles .dropdown-menu"
+      );
+      dropdowns.forEach((dropdown) => {
+        if (dropdown !== ref.current && dropdown !== activeChildDropdown) {
+          dropdown.classList.remove("show");
+        }
+      });
+
+      // Toggle the current Dropdown component
+      ref.current.classList.toggle("show");
+      return prevState === ref ? null : ref;
+    });
   }
 
   return (
@@ -43,7 +74,7 @@ function Dropdown({ selectedItemText, children, icon, minHeight = 0 }, ref) {
       </div>
 
       <div
-        id="menuItems"
+        id={id}
         className="dropdown-menu absolute left-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
         role="menu"
         aria-orientation="vertical"

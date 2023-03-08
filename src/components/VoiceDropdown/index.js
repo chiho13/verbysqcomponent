@@ -1,7 +1,7 @@
 import { useState, useEffect, memo, useRef, useMemo, useCallback } from "react";
 import SampleAudioVoice from "../SampleAudioVoice";
 import { VoiceDropdownStyle } from "./style";
-import Filter from "../Filter";
+import FilterDropdown from "../Filter";
 import Dropdown from "../Dropdown";
 import ChevronDown from "../../icons/ChevronDown";
 import { capitalize } from "../../util/capitalise";
@@ -243,12 +243,13 @@ function VoiceDropdown({ setSelectedVoiceId }) {
   return (
     <VoiceDropdownStyle>
       <Dropdown
+        id="voiceDropdown"
         selectedItemText={selectedItemText}
         ref={voicesDropdownRef}
         icon={<ChevronDown />}
         minHeight={450}
       >
-        <div>
+        <div isChild={true}>
           <div>
             {filters.length > 0 && (
               <div className="filter_label inline-flex justify-center bg-white px-4 py-2 text-sm font-medium text-gray-700 ">
@@ -308,35 +309,43 @@ function VoiceDropdown({ setSelectedVoiceId }) {
                 <tr>
                   <th class="nameHeader text-left">Name</th>
                   <th class="text-left">
-                    <Filter
+                    <FilterDropdown
+                      id="accent"
                       options={accents}
                       defaultTitle="Accent"
                       onChange={onFilterChange}
                       ref={accentFilterRef}
+                      isChild={true}
                     />
                   </th>
                   <th class="text-left">
-                    <Filter
+                    <FilterDropdown
+                      id="age"
                       options={ages}
                       defaultTitle="Age"
                       onChange={onFilterChange}
                       ref={ageFilterRef}
+                      isChild={true}
                     />
                   </th>
                   <th class="text-left">
-                    <Filter
+                    <FilterDropdown
+                      id="style"
                       options={voiceStyles}
                       defaultTitle="Style"
                       onChange={onFilterChange}
                       ref={voiceStylesFilterRef}
+                      isChild={true}
                     />
                   </th>
                   <th class="text-left">
-                    <Filter
+                    <FilterDropdown
+                      id="tempo"
                       options={tempos}
                       defaultTitle="Tempo"
                       onChange={onFilterChange}
                       ref={tempoFilterRef}
+                      isChild={true}
                     />
                   </th>
                 </tr>

@@ -3,7 +3,7 @@ import Dropdown from "../Dropdown";
 import { FilterDropdownStyle } from "./style";
 import FilterIcon from "../../icons/FilterIcon";
 
-function Filter({ options, onChange, defaultTitle }, ref) {
+function Filter({ id, options, onChange, defaultTitle }, ref) {
   const [selectedOption, setSelectedOption] = useState(defaultTitle);
 
   function handleOptionChange(option) {
@@ -19,6 +19,7 @@ function Filter({ options, onChange, defaultTitle }, ref) {
   return (
     <FilterDropdownStyle>
       <Dropdown
+        id={id}
         selectedItemText={selectedOption}
         ref={ref}
         icon={<FilterIcon />}
@@ -46,5 +47,5 @@ function Filter({ options, onChange, defaultTitle }, ref) {
     </FilterDropdownStyle>
   );
 }
-
+Filter.displayName = "ChildDropdown";
 export default forwardRef(Filter);
