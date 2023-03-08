@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 
 import "./index.css";
 
-import SampleAudioVoice from "./components/SampleAudioVoice";
 import AudioPlayer from "./components/AudioPlayer";
 import VoiceDropdown from "./components/VoiceDropdown";
 import LoadingSpinner from "./components/LoadingSpinner";
+import { ttsApi } from "./api/ttsApi";
 
 function App() {
-  const [selectedItemText, setSelectedItemText] =
-    React.useState("Choose a voice");
   const [selectedVoiceId, setSelectedVoiceId] = React.useState("");
 
   const [enteredText, setEnteredText] = React.useState("");
@@ -19,8 +17,6 @@ function App() {
 
   // const [generatedAudio, setGeneratedAudio] = React.useState(null);
   const [downloadLink, setDownloadLink] = useState(null);
-
-  const dropdownMenu = document.getElementById("menuItems");
 
   function handleTextChange(event) {
     setEnteredText(event.target.value);
@@ -32,9 +28,14 @@ function App() {
 
   const [generatedAudio, setGeneratedAudio] = useState(null);
 
+  const intervalRef = useRef(null);
+
   useEffect(() => {
+    // Clear previous interval
+    clearInterval(intervalRef.current);
+
     // Start polling for status updates
-    const interval = setInterval(async () => {
+    intervalRef.current = setInterval(async () => {
       if (transcriptionId) {
         try {
           const response = await fetch(
@@ -60,7 +61,7 @@ function App() {
 
           // Clear the interval when transcription is complete
           if (data.transcriped) {
-            clearInterval(interval);
+            clearInterval(intervalRef.current);
           }
         } catch (error) {
           console.error("Error fetching transcription status:", error);
@@ -69,8 +70,8 @@ function App() {
       }
     }, 1000);
 
-    // Stop polling when the component unmounts
-    return () => clearInterval(interval);
+    // Stop polling when the component unmounts or the transcriptionId or status changes
+    return () => clearInterval(intervalRef.current);
   }, [transcriptionId, status]);
 
   async function generateAudio(event) {
@@ -81,24 +82,13 @@ function App() {
     setStatus(false);
     setTranscriptionId("");
 
-    console.log(enteredText);
     const requestBody = {
       voice: selectedVoiceId,
       content: [enteredText],
     };
 
-    console.log(selectedVoiceId);
-
     try {
-      const response = await fetch("https://verbyttsapi.vercel.app/convert", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      const data = await response.json();
+      const data = await ttsApi(requestBody);
       console.log(data);
       setTranscriptionId(data.transcriptionId);
     } catch (error) {
@@ -143,8 +133,6 @@ function App() {
     }
   }, [selectedVoiceId, enteredText]);
 
-  const MemoizedSampleAudioVoice = React.memo(SampleAudioVoice);
-
   return (
     <div className="container p-4 mx-auto">
       <VoiceDropdown setSelectedVoiceId={setSelectedVoiceId} />
@@ -163,7 +151,9 @@ function App() {
           onChange={handleTextChange}
         ></textarea>
         <button
-          class={`generateAudio flex items-center ${isDisabled && "disabled"}`}
+          class={`generateAudio_button flex items-center ${
+            isDisabled && "disabled"
+          }`}
           onClick={generateAudio}
           disabled={audioIsLoading}
         >

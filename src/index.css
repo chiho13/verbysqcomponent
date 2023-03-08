@@ -6,7 +6,7 @@
 .container {
   max-width: 1200px;
 }
-.generateAudio {
+.generateAudio_button {
   background-color: #fff;
   color: #777777;
   border: 2px solid #777777;
@@ -17,20 +17,20 @@
   transition: border 0.3s ease-in-out, color 0.3s ease;
 }
 
-.generateAudio:hover {
+.generateAudio_button:hover {
   background-color: #fefefe;
   color: #f5820d;
   border: 2px solid #f5820d;
 }
 
-.generateAudio:disabled {
+.generateAudio_button:disabled {
   opacity: 0.8;
   pointer-events: none;
   padding: 0 16px;
   padding-left: 0;
 }
 
-.generateAudio.disabled {
+.generateAudio_button.disabled {
   opacity: 0.3;
   pointer-events: none;
 }

@@ -4,7 +4,16 @@ import { VoiceDropdownStyle } from "./style";
 import FilterDropdown from "../Filter";
 import Dropdown from "../Dropdown";
 import ChevronDown from "../../icons/ChevronDown";
-import { capitalize } from "../../util/capitalise";
+import { capitalize } from "../../api/util";
+
+import {
+  fetchVoices,
+  getAccents,
+  getAges,
+  getVoiceStyles,
+  getTempos,
+} from "../../api/getVoicesApi";
+
 function VoiceDropdown({ setSelectedVoiceId }) {
   const voicesDropdownRef = useRef({});
   const accentFilterRef = useRef({});
@@ -63,35 +72,16 @@ function VoiceDropdown({ setSelectedVoiceId }) {
   }, [voices, filters, selectedFilterOption]);
 
   useEffect(() => {
-    fetch("https://verbyttsapi.vercel.app/voices")
-      .then((response) => response.json())
-      .then((data) => {
-        setVoices(data.voices);
-
-        console.log(voices);
-        const getAccents = getUniqueValues(data.voices, "accent");
-        const getAges = getUniqueValues(data.voices, "age");
-        const getVoiceStyles = getUniqueValues(data.voices, "style");
-        const getTempos = getUniqueValues(data.voices, "tempo");
-        console.log(getAccents);
-        console.log(getAges);
-        setAccents(getAccents);
-        setAges(getAges);
-        setVoiceStyles(getVoiceStyles);
-        setTempos(getTempos);
+    fetchVoices()
+      .then((voices) => {
+        setVoices(voices);
+        setAccents(getAccents(voices));
+        setAges(getAges(voices));
+        setVoiceStyles(getVoiceStyles(voices));
+        setTempos(getTempos(voices));
       })
       .catch((error) => console.error(error));
   }, []);
-
-  function getUniqueValues(arr, key) {
-    const uniqueValues = Array.from(new Set(arr.map((item) => item[key])));
-    return uniqueValues.map((value) => {
-      return {
-        key: key,
-        value: value.charAt(0).toUpperCase() + value.slice(1),
-      };
-    });
-  }
 
   function handleVoiceSelection(voice, name) {
     setSelectedVoiceId(voice);
@@ -249,7 +239,7 @@ function VoiceDropdown({ setSelectedVoiceId }) {
         icon={<ChevronDown />}
         minHeight={450}
       >
-        <div isChild={true}>
+        <div>
           <div>
             {filters.length > 0 && (
               <div className="filter_label inline-flex justify-center bg-white px-4 py-2 text-sm font-medium text-gray-700 ">

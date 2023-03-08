@@ -1,6 +1,6 @@
 import react, { memo } from "react";
 import SampleAudioVoice from "../SampleAudioVoice";
-import { capitalize } from "../../util/capitalise";
+import { capitalize } from "../../api/util";
 
 export function VoiceRow({ voice, index, playAudio, stopAudio }) {
   const MemoizedSampleAudioVoice = memo(SampleAudioVoice);

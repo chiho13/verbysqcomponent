@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
 function AudioPlayer({ generatedAudio }) {
-  const [isPlaying, setIsPlaying] = useState(false);
   const [seekValue, setSeekValue] = useState(0);
   const [seekMax, setSeekMax] = useState(0);
 
@@ -14,9 +13,6 @@ function AudioPlayer({ generatedAudio }) {
       const handleLoadedMetadata = () => {
         setSeekMax(generatedAudio.duration);
       };
-
-      const handlePlay = () => setIsPlaying(true);
-      const handlePause = () => setIsPlaying(false);
 
       generatedAudio.addEventListener("timeupdate", handleTimeUpdate);
       generatedAudio.addEventListener("loadedmetadata", handleLoadedMetadata);
