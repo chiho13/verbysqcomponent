@@ -4,15 +4,43 @@ export const VoiceDropdownStyle = styled.div`
   position: relative;
   margin-bottom: 20px;
 
-  .dropdown-menu {
-    min-height: 400px;
-    max-height: 500px;
-    overflow-y: scroll;
+  .filter_label {
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    padding-bottom: 0;
+    padding-left: 40px;
+    padding-right: 40px;
+
+    span {
+      margin-right: 16px;
+    }
+  }
+
+  .filter_pill {
+    padding: 5px 9px;
+  }
+
+  .filter_noResult {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 370px;
   }
 
   .dropdown_table {
     border-collapse: separate;
     border-spacing: 0;
+   
+  }
+
+  .dropdown_table_wrapper {
+    display: block;
+    min-height 450px;
+    max-height: 500px;
+    overflow-y: scroll;
   }
 
   .show {
@@ -81,13 +109,18 @@ export const VoiceDropdownStyle = styled.div`
     position: sticky;
     top: 0;
     background: #ffffff;
+
     z-index: 100;
 
-    th {
+    tr:first-child th {
+      padding: 0;
+    }
+
+    tr:last-child th {
       padding-top: 20px;
       padding-bottom: 20px;
-      border-bottom: 2px solid #333333;
       min-width: 100px;
+      border-bottom: 2px solid #333333;
     }
   }
 

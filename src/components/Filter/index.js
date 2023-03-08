@@ -7,13 +7,13 @@ function Filter({ options, onChange, defaultTitle }, ref) {
   const [selectedOption, setSelectedOption] = useState(defaultTitle);
 
   function handleOptionChange(option) {
-    if (option === "All") {
-      setSelectedOption(defaultTitle);
+    if (option.value === "All") {
+      // setSelectedOption(defaultTitle);
       onChange("All");
       return;
     }
-    setSelectedOption(option);
-    onChange(option);
+    // setSelectedOption(option.value);
+    onChange(option, ref);
   }
 
   return (
@@ -28,19 +28,8 @@ function Filter({ options, onChange, defaultTitle }, ref) {
           class="filterDropdown_list py-2 text-sm text-gray-700 dark:text-gray-200"
           aria-labelledby="dropdownDefaultButton"
         >
-          <li>
-            <a
-              href="#"
-              class="filter_optionItems block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-              onClick={(e) => {
-                handleOptionChange("All");
-              }}
-            >
-              All
-            </a>
-          </li>
-          {options.map((option, index) => (
-            <li key={index}>
+          {options.map((option) => (
+            <li key={option.value}>
               <a
                 href="#"
                 class="filter_optionItems block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
@@ -48,7 +37,7 @@ function Filter({ options, onChange, defaultTitle }, ref) {
                   handleOptionChange(option);
                 }}
               >
-                {option}
+                {option.value}
               </a>
             </li>
           ))}

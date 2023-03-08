@@ -1,12 +1,6 @@
 import React from "react";
 
-function SampleAudioVoice({
-  previewUrl,
-  setAudioElement,
-  isPlaying,
-  playAudio,
-  stopAudio,
-}) {
+function SampleAudioVoice({ isPlaying, playAudio, stopAudio }) {
   return (
     <div>
       {isPlaying ? (

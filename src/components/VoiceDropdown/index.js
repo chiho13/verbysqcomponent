@@ -4,20 +4,34 @@ import { VoiceDropdownStyle } from "./style";
 import Filter from "../Filter";
 import Dropdown from "../Dropdown";
 import ChevronDown from "../../icons/ChevronDown";
-
+import { capitalize } from "../../util/capitalise";
 function VoiceDropdown({ setSelectedVoiceId }) {
   const voicesDropdownRef = useRef({});
   const accentFilterRef = useRef({});
+  const ageFilterRef = useRef({});
+  const voiceStylesFilterRef = useRef({});
+  const tempoFilterRef = useRef({});
+
   const [selectedItemText, setSelectedItemText] = useState("Choose a voice");
 
   const [voices, setVoices] = useState([]);
   const [filteredVoices, setFilteredVoices] = useState([]);
 
   const [accents, setAccents] = useState([]);
+  const [ages, setAges] = useState([]);
+  const [voiceStyles, setVoiceStyles] = useState([]);
+  const [tempos, setTempos] = useState([]);
 
   const [playingStates, setPlayingStates] = useState(
     new Array(voices.length).fill(false)
   );
+
+  const [filters, setFilters] = useState([]);
+
+  const [selectedFilterOption, setSelectedFilterOption] = useState({
+    key: "",
+    value: "",
+  });
 
   const [sampleAudioElement, setSampleAudioElement] = useState(null);
 
@@ -30,16 +44,28 @@ function VoiceDropdown({ setSelectedVoiceId }) {
         setVoices(data.voices);
 
         console.log(voices);
-        const getAccents = getUniqueAccents(data.voices);
+        const getAccents = getUniqueValues(data.voices, "accent");
+        const getAges = getUniqueValues(data.voices, "age");
+        const getVoiceStyles = getUniqueValues(data.voices, "style");
+        const getTempos = getUniqueValues(data.voices, "tempo");
         console.log(getAccents);
+        console.log(getAges);
         setAccents(getAccents);
+        setAges(getAges);
+        setVoiceStyles(getVoiceStyles);
+        setTempos(getTempos);
       })
       .catch((error) => console.error(error));
   }, []);
 
-  function getUniqueAccents(arr) {
-    const accents = Array.from(new Set(arr.map((item) => item.accent)));
-    return accents.map((str) => str.charAt(0).toUpperCase() + str.slice(1));
+  function getUniqueValues(arr, key) {
+    const uniqueValues = Array.from(new Set(arr.map((item) => item[key])));
+    return uniqueValues.map((value) => {
+      return {
+        key: key,
+        value: value.charAt(0).toUpperCase() + value.slice(1),
+      };
+    });
   }
 
   function handleVoiceSelection(voice, name) {
@@ -64,7 +90,13 @@ function VoiceDropdown({ setSelectedVoiceId }) {
         });
       }
     }
-    const newAudioElement = new Audio(voices[index].sample);
+    let newAudioElement = null;
+    if (filters.length > 0) {
+      newAudioElement = new Audio(filteredVoices[index].sample);
+    } else {
+      newAudioElement = new Audio(voices[index].sample);
+    }
+
     newAudioElement.play();
     setSampleAudioElement(newAudioElement);
     //   setIsPlaying(true);
@@ -95,20 +127,84 @@ function VoiceDropdown({ setSelectedVoiceId }) {
     });
   }
 
-  function onFilterChange(option) {
-    if (option === "All") {
-      // If "All" is selected, show all voices
-      setFilteredVoices([]);
-    } else {
-      // Otherwise, filter the voices array by the selected accent value
-      const filtered = voices.filter(
-        (voice) => voice.accent === option.toLowerCase()
+  function onFilterChange(option, ref) {
+    // Otherwise, filter the voices array by the selected accent value
+    console.log(option);
+    setSelectedFilterOption(option);
+    setFilters((prevFilters) => {
+      const newFilters = [...prevFilters];
+      const { key, value } = option;
+      const existingFilterIndex = newFilters.findIndex(
+        (filter) => filter.key === key
       );
-      setFilteredVoices(filtered);
-    }
+      if (existingFilterIndex !== -1) {
+        // If a filter with this key already exists, update its value
+        newFilters[existingFilterIndex].value = value;
+      } else {
+        // Otherwise, add a new filter
+        newFilters.push({ key, value });
+      }
+      return newFilters;
+    });
+
+    ref.current.classList.remove("show");
   }
 
-  const capitalize = (str) => str && str.charAt(0).toUpperCase() + str.slice(1);
+  useEffect(() => {
+    const filtered = voices.filter((voice) => {
+      // Check if all filter conditions match
+      return filters.every((filter) => {
+        return voice[filter.key] === filter.value.toLowerCase();
+      });
+    });
+
+    const newFiltered = filtered.filter(
+      (voice) =>
+        voice[selectedFilterOption.key] ===
+        selectedFilterOption.value.toLowerCase()
+    );
+    setFilteredVoices(newFiltered);
+  }, [filters, selectedFilterOption]);
+
+  function clearFilters() {
+    setFilteredVoices([]);
+    setFilters([]);
+    setSelectedFilterOption({
+      key: "",
+      value: "",
+    });
+  }
+
+  function VoiceRow({ voice, index }) {
+    const capitalize = (str) =>
+      str && str.charAt(0).toUpperCase() + str.slice(1);
+    return (
+      <tr
+        key={index}
+        onClick={(e) => handleVoiceSelection(voice.voiceId, voice.name)}
+        className="voiceItemContainer"
+      >
+        <td class="voiceSampleAndName flex items-center">
+          <MemoizedSampleAudioVoice
+            isPlaying={playingStates[index]}
+            playAudio={(e) => {
+              e.stopPropagation();
+              playAudio(index);
+            }}
+            stopAudio={(e) => {
+              e.stopPropagation();
+              stopAudio(index);
+            }}
+          />
+          {voice.name}
+        </td>
+        <td>{capitalize(voice.accent)}</td>
+        <td>{capitalize(voice.age)}</td>
+        <td>{capitalize(voice.style)}</td>
+        <td>{capitalize(voice.tempo)}</td>
+      </tr>
+    );
+  }
 
   return (
     <VoiceDropdownStyle>
@@ -116,91 +212,128 @@ function VoiceDropdown({ setSelectedVoiceId }) {
         selectedItemText={selectedItemText}
         ref={voicesDropdownRef}
         icon={<ChevronDown />}
-        minHeight={400}
+        minHeight={450}
       >
         <div>
-          <table class="dropdown_table w-full table-auto">
-            <thead class="w-full p-4">
-              <tr class="voiceTitles">
-                <th class="nameHeader text-left">Name</th>
-                <th class="text-left">
-                  <Filter
-                    options={accents}
-                    defaultTitle="Accent"
-                    onChange={onFilterChange}
-                    ref={accentFilterRef}
-                  />
-                </th>
-                <th class="text-left">Age</th>
-                <th class="text-left">Style</th>
-                <th class="text-left">Tempo</th>
-              </tr>
-            </thead>
+          <div>
+            {filters.length > 0 && (
+              <div className="filter_label inline-flex justify-center bg-white px-4 py-2 text-sm font-medium text-gray-700 ">
+                <div>
+                  <span>Applied Filters:</span>
 
-            <tbody class="w-full">
-              {filteredVoices.length
-                ? filteredVoices.map((voice, index) => (
-                    <tr
-                      key={index}
-                      onClick={(e) =>
-                        handleVoiceSelection(voice.voiceId, voice.name)
-                      }
-                      className="voiceItemContainer"
-                    >
-                      <td class="voiceSampleAndName flex items-center">
-                        <MemoizedSampleAudioVoice
-                          previewUrl={voice.sample}
-                          setAudioElement={setSampleAudioElement}
-                          isPlaying={playingStates[index]}
-                          playAudio={(e) => {
-                            e.stopPropagation();
-                            playAudio(index);
-                          }}
-                          stopAudio={(e) => {
-                            e.stopPropagation();
-                            stopAudio(index);
-                          }}
+                  {filters.map((filter) => {
+                    const { key, value } = filter;
+                    return (
+                      <span
+                        key={`${key}-${value}`}
+                        className="filter_pill inline-flex items-center text-sm font-medium bg-gray-100 text-gray-800 mr-2"
+                      >
+                        {`${capitalize(key)}: ${value}`}{" "}
+                        {/* using string interpolation */}
+                        <button className="ml-2 focus:outline-none">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            strokeWidth="1.5"
+                            stroke="currentColor"
+                            className="w-4 h-4 text-gray-500 fill-current"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+
+                <button
+                  class="filter_reset inline-flex justify-center rounded-md bg-white border-2 border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 outline-none focus:outline-none"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearFilters();
+                  }}
+                >
+                  Clear Filters
+                </button>
+              </div>
+            )}
+          </div>
+          <div className="dropdown_table_wrapper">
+            <table className="dropdown_table w-full table-auto">
+              <thead className="voiceTitles w-full p-4">
+                <tr>
+                  <th class="nameHeader text-left">Name</th>
+                  <th class="text-left">
+                    <Filter
+                      options={accents}
+                      defaultTitle="Accent"
+                      onChange={onFilterChange}
+                      ref={accentFilterRef}
+                    />
+                  </th>
+                  <th class="text-left">
+                    <Filter
+                      options={ages}
+                      defaultTitle="Age"
+                      onChange={onFilterChange}
+                      ref={ageFilterRef}
+                    />
+                  </th>
+                  <th class="text-left">
+                    <Filter
+                      options={voiceStyles}
+                      defaultTitle="Style"
+                      onChange={onFilterChange}
+                      ref={voiceStylesFilterRef}
+                    />
+                  </th>
+                  <th class="text-left">
+                    <Filter
+                      options={tempos}
+                      defaultTitle="Tempo"
+                      onChange={onFilterChange}
+                      ref={tempoFilterRef}
+                    />
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody class="w-full">
+                {filters.length > 0
+                  ? filteredVoices.length
+                    ? filteredVoices.map((voice, index) => (
+                        <VoiceRow
+                          voice={voice}
+                          key={index}
+                          index={index}
+                          playAudio={playAudio}
+                          stopAudio={stopAudio}
                         />
-                        {voice.name}
-                      </td>
-                      <td>{capitalize(voice.accent)}</td>
-                      <td>{capitalize(voice.age)}</td>
-                      <td>{capitalize(voice.style)}</td>
-                      <td>{capitalize(voice.tempo)}</td>
-                    </tr>
-                  ))
-                : voices.map((voice, index) => (
-                    <tr
-                      key={index}
-                      onClick={(e) =>
-                        handleVoiceSelection(voice.voiceId, voice.name)
-                      }
-                      className="voiceItemContainer"
-                    >
-                      <td class="voiceSampleAndName flex items-center">
-                        <MemoizedSampleAudioVoice
-                          previewUrl={voice.sample}
-                          setAudioElement={setSampleAudioElement}
-                          isPlaying={playingStates[index]}
-                          playAudio={(e) => {
-                            e.stopPropagation();
-                            playAudio(index);
-                          }}
-                          stopAudio={(e) => {
-                            e.stopPropagation();
-                            stopAudio(index);
-                          }}
-                        />
-                        {voice.name}
-                      </td>
-                      <td>{capitalize(voice.accent)}</td>
-                      <td>{capitalize(voice.age)}</td>
-                      <td>{capitalize(voice.style)}</td>
-                      <td>{capitalize(voice.tempo)}</td>
-                    </tr>
-                  ))}
-            </tbody>
-          </table>
+                      ))
+                    : null
+                  : voices.map((voice, index) => (
+                      <VoiceRow
+                        voice={voice}
+                        key={index}
+                        index={index}
+                        playAudio={playAudio}
+                        stopAudio={stopAudio}
+                      />
+                    ))}
+              </tbody>
+            </table>
+
+            {!(filters.length > 0 && filteredVoices.length > 0) && (
+              <div class="filter_noResult">
+                No Voices found for selected filters
+              </div>
+            )}
+          </div>
         </div>
       </Dropdown>
     </VoiceDropdownStyle>

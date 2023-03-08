@@ -12,10 +12,7 @@ export const DropdownStyle = styled.div`
     min-height ${(props) => `${props.minHeight}px`};
   }
 
-  .dropdown_table {
-    border-collapse: separate;
-    border-spacing: 0;
-  }
+
 
   .show {
     display: block;
