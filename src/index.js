@@ -146,7 +146,7 @@ function App() {
   const MemoizedSampleAudioVoice = React.memo(SampleAudioVoice);
 
   return (
-    <div className="container p-4 mx-auto max-w-screen-lg ">
+    <div className="container p-4 mx-auto">
       <VoiceDropdown setSelectedVoiceId={setSelectedVoiceId} />
 
       <form id="text-form">

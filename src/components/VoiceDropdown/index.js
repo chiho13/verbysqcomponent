@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useRef } from "react";
+import { useState, useEffect, memo, useRef, useMemo } from "react";
 import SampleAudioVoice from "../SampleAudioVoice";
 import { VoiceDropdownStyle } from "./style";
 import Filter from "../Filter";
@@ -14,8 +14,9 @@ function VoiceDropdown({ setSelectedVoiceId }) {
 
   const [selectedItemText, setSelectedItemText] = useState("Choose a voice");
 
+  const [originalVoiceData, setOriginalVoiceData] = useState([]);
   const [voices, setVoices] = useState([]);
-  const [filteredVoices, setFilteredVoices] = useState([]);
+  // const [filteredVoices, setFilteredVoices] = useState([]);
 
   const [accents, setAccents] = useState([]);
   const [ages, setAges] = useState([]);
@@ -34,6 +35,8 @@ function VoiceDropdown({ setSelectedVoiceId }) {
   });
 
   const [sampleAudioElement, setSampleAudioElement] = useState(null);
+
+  const [isFiltering, setIsFiltering] = useState(false);
 
   const MemoizedSampleAudioVoice = memo(SampleAudioVoice);
 
@@ -150,24 +153,28 @@ function VoiceDropdown({ setSelectedVoiceId }) {
     ref.current.classList.remove("show");
   }
 
-  useEffect(() => {
-    const filtered = voices.filter((voice) => {
-      // Check if all filter conditions match
-      return filters.every((filter) => {
-        return voice[filter.key] === filter.value.toLowerCase();
+  const filteredVoices = useMemo(() => {
+    return voices
+      .filter((voice) => {
+        // Check if all filter conditions match
+        return filters.every((filter) => {
+          return voice[filter.key] === filter.value.toLowerCase();
+        });
+      })
+      .filter((voice) => {
+        return (
+          voice[selectedFilterOption.key] ===
+          selectedFilterOption.value.toLowerCase()
+        );
       });
-    });
+  }, [voices, filters, selectedFilterOption]);
 
-    const newFiltered = filtered.filter(
-      (voice) =>
-        voice[selectedFilterOption.key] ===
-        selectedFilterOption.value.toLowerCase()
-    );
-    setFilteredVoices(newFiltered);
-  }, [filters, selectedFilterOption]);
+  useEffect(() => {
+    setIsFiltering(filteredVoices.length > 0 && filters.length > 0);
+  }, [filteredVoices, filters]);
 
   function clearFilters() {
-    setFilteredVoices([]);
+    setIsFiltering(false);
     setFilters([]);
     setSelectedFilterOption({
       key: "",
@@ -304,35 +311,37 @@ function VoiceDropdown({ setSelectedVoiceId }) {
               </thead>
 
               <tbody class="w-full">
-                {filters.length > 0
-                  ? filteredVoices.length
-                    ? filteredVoices.map((voice, index) => (
-                        <VoiceRow
-                          voice={voice}
-                          key={index}
-                          index={index}
-                          playAudio={playAudio}
-                          stopAudio={stopAudio}
-                        />
-                      ))
-                    : null
-                  : voices.map((voice, index) => (
-                      <VoiceRow
-                        voice={voice}
-                        key={index}
-                        index={index}
-                        playAudio={playAudio}
-                        stopAudio={stopAudio}
-                      />
-                    ))}
+                {isFiltering &&
+                  filteredVoices.map((voice, index) => (
+                    <VoiceRow
+                      voice={voice}
+                      key={index}
+                      index={index}
+                      playAudio={playAudio}
+                      stopAudio={stopAudio}
+                    />
+                  ))}
+
+                {!isFiltering &&
+                  filters.length === 0 &&
+                  voices.map((voice, index) => (
+                    <VoiceRow
+                      voice={voice}
+                      key={index}
+                      index={index}
+                      playAudio={playAudio}
+                      stopAudio={stopAudio}
+                    />
+                  ))}
               </tbody>
             </table>
 
-            {!(filters.length > 0 && filteredVoices.length > 0) && (
-              <div class="filter_noResult">
-                No Voices found for selected filters
-              </div>
-            )}
+            {!isFiltering &&
+              !(filters.length > 0 && filteredVoices.length > 0) && (
+                <div class="filter_noResult">
+                  No Voices found for selected filters
+                </div>
+              )}
           </div>
         </div>
       </Dropdown>

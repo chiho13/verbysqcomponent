@@ -88,7 +88,7 @@ export const VoiceDropdownStyle = styled.div`
   }
 
   .nameHeader {
-    text-indent: 64px;
+    text-indent: 74px;
   }
 
   thead {
