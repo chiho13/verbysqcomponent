@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, useRef, useMemo } from "react";
+import { useState, useEffect, memo, useRef, useMemo, useCallback } from "react";
 import SampleAudioVoice from "../SampleAudioVoice";
 import { VoiceDropdownStyle } from "./style";
 import Filter from "../Filter";
@@ -39,6 +39,29 @@ function VoiceDropdown({ setSelectedVoiceId }) {
 
   const MemoizedSampleAudioVoice = memo(SampleAudioVoice);
 
+  const filteredVoices = useMemo(() => {
+    if (filters.length === 0) {
+      return voices;
+    }
+
+    let filtered = voices.filter((voice) => {
+      return filters.every((filter) => {
+        return voice[filter.key] === filter.value.toLowerCase();
+      });
+    });
+
+    if (selectedFilterOption.key !== "" && selectedFilterOption.value !== "") {
+      filtered = filtered.filter((voice) => {
+        return (
+          voice[selectedFilterOption.key] ===
+          selectedFilterOption.value.toLowerCase()
+        );
+      });
+    }
+
+    return filtered;
+  }, [voices, filters, selectedFilterOption]);
+
   useEffect(() => {
     fetch("https://verbyttsapi.vercel.app/voices")
       .then((response) => response.json())
@@ -78,56 +101,62 @@ function VoiceDropdown({ setSelectedVoiceId }) {
     }
   }
 
-  function playAudio(index) {
-    if (sampleAudioElement) {
-      sampleAudioElement.currentTime = 0;
-      sampleAudioElement.pause();
+  const playAudio = useCallback(
+    (index) => {
+      if (sampleAudioElement) {
+        sampleAudioElement.currentTime = 0;
+        sampleAudioElement.pause();
 
-      const prevIndex = playingStates.findIndex((state) => state);
-      if (prevIndex !== -1) {
+        const prevIndex = playingStates.findIndex((state) => state);
+        if (prevIndex !== -1) {
+          setPlayingStates((prevStates) => {
+            const newStates = [...prevStates];
+            newStates[prevIndex] = false;
+            return newStates;
+          });
+        }
+      }
+      let newAudioElement = null;
+      if (filters.length > 0) {
+        newAudioElement = new Audio(filteredVoices[index].sample);
+      } else {
+        newAudioElement = new Audio(voices[index].sample);
+      }
+
+      newAudioElement.play();
+      setSampleAudioElement(newAudioElement);
+      //   setIsPlaying(true);
+      setPlayingStates((prevStates) => {
+        const newStates = [...prevStates];
+        newStates[index] = true;
+        return newStates;
+      });
+
+      newAudioElement.addEventListener("ended", () => {
         setPlayingStates((prevStates) => {
           const newStates = [...prevStates];
-          newStates[prevIndex] = false;
+          newStates[index] = false;
           return newStates;
         });
+      });
+    },
+    [sampleAudioElement, filters, voices, filteredVoices, playingStates]
+  );
+
+  const stopAudio = useCallback(
+    (index) => {
+      if (sampleAudioElement) {
+        sampleAudioElement.currentTime = 0;
+        sampleAudioElement.pause();
       }
-    }
-    let newAudioElement = null;
-    if (filters.length > 0) {
-      newAudioElement = new Audio(filteredVoices[index].sample);
-    } else {
-      newAudioElement = new Audio(voices[index].sample);
-    }
-
-    newAudioElement.play();
-    setSampleAudioElement(newAudioElement);
-    //   setIsPlaying(true);
-    setPlayingStates((prevStates) => {
-      const newStates = [...prevStates];
-      newStates[index] = true;
-      return newStates;
-    });
-
-    newAudioElement.addEventListener("ended", () => {
       setPlayingStates((prevStates) => {
         const newStates = [...prevStates];
         newStates[index] = false;
         return newStates;
       });
-    });
-  }
-
-  function stopAudio(index) {
-    if (sampleAudioElement) {
-      sampleAudioElement.currentTime = 0;
-      sampleAudioElement.pause();
-    }
-    setPlayingStates((prevStates) => {
-      const newStates = [...prevStates];
-      newStates[index] = false;
-      return newStates;
-    });
-  }
+    },
+    [sampleAudioElement]
+  );
 
   function onFilterChange(option, ref) {
     // Otherwise, filter the voices array by the selected accent value
@@ -152,29 +181,6 @@ function VoiceDropdown({ setSelectedVoiceId }) {
     ref.current.classList.remove("show");
   }
 
-  const filteredVoices = useMemo(() => {
-    if (filters.length === 0) {
-      return voices;
-    }
-
-    let filtered = voices.filter((voice) => {
-      return filters.every((filter) => {
-        return voice[filter.key] === filter.value.toLowerCase();
-      });
-    });
-
-    if (selectedFilterOption.key !== "" && selectedFilterOption.value !== "") {
-      filtered = filtered.filter((voice) => {
-        return (
-          voice[selectedFilterOption.key] ===
-          selectedFilterOption.value.toLowerCase()
-        );
-      });
-    }
-
-    return filtered;
-  }, [voices, filters, selectedFilterOption]);
-
   useEffect(() => {
     setIsFiltering(filteredVoices.length > 0 && filters.length > 0);
   }, [filteredVoices, filters]);
@@ -190,23 +196,16 @@ function VoiceDropdown({ setSelectedVoiceId }) {
 
   function clearIndividualFilter(key, value) {
     setFilters((prevFilters) => {
-      const updatedFilters = prevFilters.filter((filter) => {
-        return !(filter.key === key && filter.value === value);
-      });
-      return updatedFilters;
+      return prevFilters.filter(
+        (filter) => filter.key !== key || filter.value !== value
+      );
     });
 
     setSelectedFilterOption((prevSelectedFilterOption) => {
-      if (
-        prevSelectedFilterOption.key === key &&
+      return prevSelectedFilterOption.key === key &&
         prevSelectedFilterOption.value === value
-      ) {
-        return {
-          key: "",
-          value: "",
-        };
-      }
-      return prevSelectedFilterOption;
+        ? { key: "", value: "" }
+        : prevSelectedFilterOption;
     });
   }
 
