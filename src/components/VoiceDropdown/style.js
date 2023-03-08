@@ -22,7 +22,12 @@ export const VoiceDropdownStyle = styled.div`
   .filter_pill {
     padding: 5px 9px;
   }
-
+ 
+  .close-icon:hover path {
+    stroke: #888888;
+    transition: stroke 0.3s ease;
+  }
+  
   .filter_noResult {
     display: flex;
     justify-content: center;

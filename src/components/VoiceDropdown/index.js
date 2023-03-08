@@ -14,7 +14,6 @@ function VoiceDropdown({ setSelectedVoiceId }) {
 
   const [selectedItemText, setSelectedItemText] = useState("Choose a voice");
 
-  const [originalVoiceData, setOriginalVoiceData] = useState([]);
   const [voices, setVoices] = useState([]);
   // const [filteredVoices, setFilteredVoices] = useState([]);
 
@@ -154,19 +153,26 @@ function VoiceDropdown({ setSelectedVoiceId }) {
   }
 
   const filteredVoices = useMemo(() => {
-    return voices
-      .filter((voice) => {
-        // Check if all filter conditions match
-        return filters.every((filter) => {
-          return voice[filter.key] === filter.value.toLowerCase();
-        });
-      })
-      .filter((voice) => {
+    if (filters.length === 0) {
+      return voices;
+    }
+
+    let filtered = voices.filter((voice) => {
+      return filters.every((filter) => {
+        return voice[filter.key] === filter.value.toLowerCase();
+      });
+    });
+
+    if (selectedFilterOption.key !== "" && selectedFilterOption.value !== "") {
+      filtered = filtered.filter((voice) => {
         return (
           voice[selectedFilterOption.key] ===
           selectedFilterOption.value.toLowerCase()
         );
       });
+    }
+
+    return filtered;
   }, [voices, filters, selectedFilterOption]);
 
   useEffect(() => {
@@ -179,6 +185,28 @@ function VoiceDropdown({ setSelectedVoiceId }) {
     setSelectedFilterOption({
       key: "",
       value: "",
+    });
+  }
+
+  function clearIndividualFilter(key, value) {
+    setFilters((prevFilters) => {
+      const updatedFilters = prevFilters.filter((filter) => {
+        return !(filter.key === key && filter.value === value);
+      });
+      return updatedFilters;
+    });
+
+    setSelectedFilterOption((prevSelectedFilterOption) => {
+      if (
+        prevSelectedFilterOption.key === key &&
+        prevSelectedFilterOption.value === value
+      ) {
+        return {
+          key: "",
+          value: "",
+        };
+      }
+      return prevSelectedFilterOption;
     });
   }
 
@@ -226,7 +254,7 @@ function VoiceDropdown({ setSelectedVoiceId }) {
             {filters.length > 0 && (
               <div className="filter_label inline-flex justify-center bg-white px-4 py-2 text-sm font-medium text-gray-700 ">
                 <div>
-                  <span>Applied Filters:</span>
+                  <span>Filters:</span>
 
                   {filters.map((filter) => {
                     const { key, value } = filter;
@@ -235,16 +263,21 @@ function VoiceDropdown({ setSelectedVoiceId }) {
                         key={`${key}-${value}`}
                         className="filter_pill inline-flex items-center text-sm font-medium bg-gray-100 text-gray-800 mr-2"
                       >
-                        {`${capitalize(key)}: ${value}`}{" "}
+                        {`${capitalize(key)}: ${value}`}
                         {/* using string interpolation */}
-                        <button className="ml-2 focus:outline-none">
+                        <button
+                          className="ml-2 focus:outline-none"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            clearIndividualFilter(key, value);
+                          }}
+                        >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
                             viewBox="0 0 24 24"
                             strokeWidth="1.5"
                             stroke="currentColor"
-                            className="w-4 h-4 text-gray-500 fill-current"
+                            className="close-icon w-4 h-4 text-gray-500 fill-current"
                           >
                             <path
                               strokeLinecap="round"
