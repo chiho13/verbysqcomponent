@@ -9,7 +9,7 @@ import {
 } from "react";
 import SampleAudioVoice from "../SampleAudioVoice";
 import { VoiceDropdownStyle } from "./style";
-import FilterDropdown from "../Filter";
+import FilterDropdown from "../FilterDropdown";
 import Dropdown from "../Dropdown";
 import ChevronDown from "../../icons/ChevronDown";
 import { capitalize } from "../../api/util";
@@ -56,6 +56,8 @@ function VoiceDropdown({ setSelectedVoiceId }) {
 
   const MemoizedSampleAudioVoice = memo(SampleAudioVoice);
 
+  const [isOpen, setActiveFilter] = useState("");
+
   const filteredVoices = useMemo(() => {
     if (filters.length === 0) {
       return voices;
@@ -96,9 +98,9 @@ function VoiceDropdown({ setSelectedVoiceId }) {
   function handleVoiceSelection(voice, name) {
     setSelectedVoiceId(voice);
     setSelectedItemText(name);
-    if (voicesDropdownRef.current && voicesDropdownRef.current.classList) {
-      voicesDropdownRef.current.classList.remove("show");
-    }
+    // if (voicesDropdownRef.current && voicesDropdownRef.current.classList) {
+    //   voicesDropdownRef.current.classList.remove("show");
+    // }
   }
 
   const playAudio = useCallback(
@@ -178,7 +180,7 @@ function VoiceDropdown({ setSelectedVoiceId }) {
       return newFilters;
     });
 
-    ref.current.classList.remove("show");
+    setActiveFilter("");
   }
 
   useLayoutEffect(() => {
@@ -315,7 +317,8 @@ function VoiceDropdown({ setSelectedVoiceId }) {
                       defaultTitle="Accent"
                       onChange={onFilterChange}
                       ref={accentFilterRef}
-                      isChild={true}
+                      setActiveFilter={setActiveFilter}
+                      isOpen={isOpen === "accent"}
                     />
                   </th>
                   <th class="text-left">
@@ -325,7 +328,8 @@ function VoiceDropdown({ setSelectedVoiceId }) {
                       defaultTitle="Age"
                       onChange={onFilterChange}
                       ref={ageFilterRef}
-                      isChild={true}
+                      setActiveFilter={setActiveFilter}
+                      isOpen={isOpen === "age"}
                     />
                   </th>
                   <th class="text-left">
@@ -335,7 +339,8 @@ function VoiceDropdown({ setSelectedVoiceId }) {
                       defaultTitle="Style"
                       onChange={onFilterChange}
                       ref={voiceStylesFilterRef}
-                      isChild={true}
+                      setActiveFilter={setActiveFilter}
+                      isOpen={isOpen === "style"}
                     />
                   </th>
                   <th class="text-left">
@@ -345,7 +350,8 @@ function VoiceDropdown({ setSelectedVoiceId }) {
                       defaultTitle="Tempo"
                       onChange={onFilterChange}
                       ref={tempoFilterRef}
-                      isChild={true}
+                      setActiveFilter={setActiveFilter}
+                      isOpen={isOpen === "tempo"}
                     />
                   </th>
                 </tr>

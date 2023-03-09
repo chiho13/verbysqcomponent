@@ -1,12 +1,6 @@
-import React, {
-  useEffect,
-  forwardRef,
-  useState,
-  useCallback,
-  ForwardedRef,
-} from "react";
+import React, { useRef } from "react";
 import { DropdownStyle } from "./style";
-
+import useDropdown from "~/src/hooks/useDropdown";
 interface DropdownProps {
   id: string;
   selectedItemText: string;
@@ -15,38 +9,14 @@ interface DropdownProps {
   minHeight?: number;
 }
 
-function Dropdown(
-  { id, selectedItemText, children, icon, minHeight = 0 }: DropdownProps,
-  ref: ForwardedRef<HTMLDivElement>
-) {
-  const [activeChildDropdown, setActiveChildDropdown] =
-    useState<HTMLDivElement | null>(null);
-
-  const handleClickOutsideDropdown = useCallback(
-    (event: MouseEvent) => {
-      if (
-        ref &&
-        "current" in ref &&
-        ref.current &&
-        !ref.current.contains(event.target as Node) &&
-        (event.target as HTMLElement).tagName !== "svg" &&
-        (!activeChildDropdown ||
-          !activeChildDropdown.contains(event.target as Node))
-      ) {
-        ref.current.classList.remove("show");
-        setActiveChildDropdown(null);
-      }
-    },
-    [ref, activeChildDropdown]
-  );
-
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutsideDropdown);
-
-    return () => {
-      document.removeEventListener("click", handleClickOutsideDropdown);
-    };
-  }, [handleClickOutsideDropdown]);
+function Dropdown({
+  id,
+  selectedItemText,
+  children,
+  icon,
+  minHeight = 0,
+}: DropdownProps) {
+  const { ref, isOpen, handleOpen, handleClose } = useDropdown();
 
   function handleVoicesDropdownClick(
     event: React.MouseEvent<HTMLButtonElement>
@@ -54,32 +24,11 @@ function Dropdown(
     event.preventDefault();
     event.stopPropagation();
 
-    setActiveChildDropdown((prevState) => {
-      // Close all other child Dropdown components
-      const dropdowns = document.querySelectorAll<HTMLDivElement>(
-        ".voiceTitles .dropdown-menu"
-      );
-      dropdowns.forEach((dropdown) => {
-        if (ref.current && dropdown !== ref.current && dropdown !== prevState) {
-          dropdown.classList.remove("show");
-        }
-      });
-
-      // Toggle the current Dropdown component
-      if (ref.current) {
-        const shouldShow = prevState !== ref.current;
-        ref.current.classList.toggle("show", shouldShow);
-
-        if (!shouldShow) {
-          setActiveChildDropdown(null);
-        } else {
-          setActiveChildDropdown(ref.current);
-        }
-        return shouldShow ? ref.current : null;
-      }
-
-      return prevState;
-    });
+    if (isOpen) {
+      handleClose();
+    } else {
+      handleOpen();
+    }
   }
 
   return (
@@ -87,7 +36,7 @@ function Dropdown(
       <div>
         <button
           className="dropdown-toggle inline-flex justify-center rounded-md border-2 border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-opacity-50 focus-visible:outline-none"
-          aria-expanded="true"
+          aria-expanded={isOpen}
           aria-haspopup="true"
           id="voices-dropdown"
           onClick={handleVoicesDropdownClick}
@@ -99,7 +48,9 @@ function Dropdown(
 
       <div
         id={id}
-        className="dropdown-menu absolute left-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
+        className={`dropdown-menu absolute left-0 z-10 mt-2 w-full origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 ${
+          isOpen ? "show" : ""
+        }`}
         role="menu"
         aria-orientation="vertical"
         aria-labelledby="voices-dropdown"
@@ -112,4 +63,4 @@ function Dropdown(
   );
 }
 
-export default forwardRef<HTMLDivElement, DropdownProps>(Dropdown);
+export default Dropdown;
