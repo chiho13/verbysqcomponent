@@ -1,4 +1,12 @@
-import { useState, useEffect, memo, useRef, useMemo, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  memo,
+  useRef,
+  useMemo,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import SampleAudioVoice from "../SampleAudioVoice";
 import { VoiceDropdownStyle } from "./style";
 import FilterDropdown from "../Filter";
@@ -79,6 +87,8 @@ function VoiceDropdown({ setSelectedVoiceId }) {
         setAges(getAges(voices));
         setVoiceStyles(getVoiceStyles(voices));
         setTempos(getTempos(voices));
+
+        console.log(voices);
       })
       .catch((error) => console.error(error));
   }, []);
@@ -171,7 +181,7 @@ function VoiceDropdown({ setSelectedVoiceId }) {
     ref.current.classList.remove("show");
   }
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setIsFiltering(filteredVoices.length > 0 && filters.length > 0);
   }, [filteredVoices, filters]);
 

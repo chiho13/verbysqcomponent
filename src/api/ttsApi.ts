@@ -1,4 +1,6 @@
-export async function convertTextToAudio(requestBody) {
+import { TTSResponse } from "../types/ttsresponse";
+
+export async function ttsApi(requestBody: object): Promise<TTSResponse> {
   const response = await fetch("https://verbyttsapi.vercel.app/convert", {
     method: "POST",
     headers: {

@@ -1,6 +1,6 @@
-import styled from "styled-components";
+import styled, { StyledComponent } from "styled-components";
 
-export const DropdownStyle = styled.div`
+export const DropdownStyle: StyledComponent<"div", any> = styled.div`
   position: relative;
 
   .dropdown-menu {
@@ -9,10 +9,7 @@ export const DropdownStyle = styled.div`
     display: none;
     background-color: white;
     border: 2px solid #ccc;
-    min-height ${(props) => `${props.minHeight}px`};
   }
-
-
 
   .show {
     display: block;
