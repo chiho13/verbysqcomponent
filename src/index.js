@@ -5,8 +5,12 @@ import "./index.css";
 
 import AudioPlayer from "./components/AudioPlayer";
 import VoiceDropdown from "./components/VoiceDropdown";
-import LoadingSpinner from "./components/LoadingSpinner";
+import LoadingSpinner from "./icons/LoadingSpinner";
+import GenerateButton from "./components/GenerateButton";
+
 import { ttsApi } from "./api/ttsApi";
+
+import useStatusPolling from "./hooks/useStatusPolling";
 
 function App() {
   const [selectedVoiceId, setSelectedVoiceId] = React.useState("");
@@ -16,7 +20,7 @@ function App() {
   const [audioIsLoading, setAudioIsLoading] = React.useState(false);
 
   // const [generatedAudio, setGeneratedAudio] = React.useState(null);
-  const [downloadLink, setDownloadLink] = useState(null);
+  // const [downloadLink, setDownloadLink] = useState(null);
 
   function handleTextChange(event) {
     setEnteredText(event.target.value);
@@ -26,59 +30,64 @@ function App() {
   const [status, setStatus] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
 
-  const [generatedAudio, setGeneratedAudio] = useState(null);
+  // const [generatedAudio, setGeneratedAudio] = useState(null);
+  const [generatedAudioElement, setGeneratedAudioElement] = useStatusPolling(
+    transcriptionId,
+    status,
+    setStatus,
+    setAudioIsLoading
+  );
+  // const intervalRef = useRef(null);
 
-  const intervalRef = useRef(null);
+  // useEffect(() => {
+  //   // Clear previous interval
+  //   clearInterval(intervalRef.current);
 
-  useEffect(() => {
-    // Clear previous interval
-    clearInterval(intervalRef.current);
+  //   // Start polling for status updates
+  //   intervalRef.current = setInterval(async () => {
+  //     if (transcriptionId) {
+  //       try {
+  //         const response = await fetch(
+  //           `https://verbyttsapi.vercel.app/articleStatus/${transcriptionId}`
+  //         );
+  //         if (!response.ok) {
+  //           throw new Error(`HTTP error! status: ${response.status}`);
+  //         }
+  //         const data = await response.json();
+  //         console.log(data);
 
-    // Start polling for status updates
-    intervalRef.current = setInterval(async () => {
-      if (transcriptionId) {
-        try {
-          const response = await fetch(
-            `https://verbyttsapi.vercel.app/articleStatus/${transcriptionId}`
-          );
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const data = await response.json();
-          console.log(data);
+  //         setStatus(data.transcriped);
 
-          setStatus(data.transcriped);
+  //         if (status && data.audioUrl && data.audioUrl.length > 0) {
+  //           const newAudioElement = new Audio(data.audioUrl[0]);
+  //           newAudioElement.addEventListener("error", (e) => {
+  //             console.error("Error playing audio:", e);
+  //           });
+  //           // newAudioElement.play();
+  //           setGeneratedAudio(newAudioElement);
+  //           setAudioIsLoading(false);
+  //         }
 
-          if (status && data.audioUrl && data.audioUrl.length > 0) {
-            const newAudioElement = new Audio(data.audioUrl[0]);
-            newAudioElement.addEventListener("error", (e) => {
-              console.error("Error playing audio:", e);
-            });
-            // newAudioElement.play();
-            setGeneratedAudio(newAudioElement);
-            setAudioIsLoading(false);
-          }
+  //         // Clear the interval when transcription is complete
+  //         if (data.transcriped) {
+  //           clearInterval(intervalRef.current);
+  //         }
+  //       } catch (error) {
+  //         console.error("Error fetching transcription status:", error);
+  //         // TODO: Handle error (e.g. show error message to user)
+  //       }
+  //     }
+  //   }, 1000);
 
-          // Clear the interval when transcription is complete
-          if (data.transcriped) {
-            clearInterval(intervalRef.current);
-          }
-        } catch (error) {
-          console.error("Error fetching transcription status:", error);
-          // TODO: Handle error (e.g. show error message to user)
-        }
-      }
-    }, 1000);
-
-    // Stop polling when the component unmounts or the transcriptionId or status changes
-    return () => clearInterval(intervalRef.current);
-  }, [transcriptionId, status]);
+  //   // Stop polling when the component unmounts or the transcriptionId or status changes
+  //   return () => clearInterval(intervalRef.current);
+  // }, [transcriptionId, status]);
 
   async function generateAudio(event) {
     event.preventDefault();
 
     setAudioIsLoading(true);
-    setGeneratedAudio(null);
+    setGeneratedAudioElement(null);
     setStatus(false);
     setTranscriptionId("");
 
@@ -150,26 +159,15 @@ function App() {
           className="textarea_input block w-full mb-4 bg-gray-100 p-4 resize-none border-gray-300 border-2 rounded-md focus:outline-none focus-visible:border-orange-500"
           onChange={handleTextChange}
         ></textarea>
-        <button
-          class={`generateAudio_button flex items-center ${
-            isDisabled && "disabled"
-          }`}
+        <GenerateButton
+          isDisabled={isDisabled}
+          audioIsLoading={audioIsLoading}
           onClick={generateAudio}
-          disabled={audioIsLoading}
-        >
-          {audioIsLoading ? (
-            <>
-              <LoadingSpinner />
-              <div>Generating...</div>
-            </>
-          ) : (
-            <div>Generate</div>
-          )}
-        </button>
+        />
       </form>
       <div id="download-container" className="mt-4"></div>
-      {!audioIsLoading && generatedAudio && (
-        <AudioPlayer generatedAudio={generatedAudio} />
+      {!audioIsLoading && generatedAudioElement && (
+        <AudioPlayer generatedAudio={generatedAudioElement} />
       )}
       {audioUrl && <DownloadButton audioUrl={audioUrl} />}
     </div>

@@ -350,7 +350,7 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
                       isOpen={isOpen === "accent"}
                     />
                   </th>
-                  <th class="text-left">
+                  <th className="text-left">
                     <FilterDropdown
                       id="age"
                       options={ages}
@@ -361,7 +361,7 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
                       isOpen={isOpen === "age"}
                     />
                   </th>
-                  <th class="text-left">
+                  <th className="text-left">
                     <FilterDropdown
                       id="style"
                       options={voiceStyles}
@@ -372,7 +372,7 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
                       isOpen={isOpen === "style"}
                     />
                   </th>
-                  <th class="text-left">
+                  <th className="text-left">
                     <FilterDropdown
                       id="tempo"
                       options={tempos}
@@ -386,7 +386,7 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
                 </tr>
               </thead>
 
-              <tbody class="w-full">
+              <tbody className="w-full">
                 {isFiltering &&
                   filteredVoices.map((voice, index) => (
                     <VoiceRow

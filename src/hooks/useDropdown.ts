@@ -1,5 +1,4 @@
 import React from "react";
-import useClickOutsideHandler from "./useClickOutside";
 
 interface UseDropdownProps {
   initialOpen?: boolean;
@@ -16,10 +15,6 @@ function useDropdown({ initialOpen = false }: UseDropdownProps = {}) {
   const handleClose = () => {
     setIsOpen(false);
   };
-
-  // useClickOutsideHandler(ref, () => {
-  //   setIsOpen(false);
-  // });
 
   return { ref, isOpen, handleOpen, handleClose };
 }

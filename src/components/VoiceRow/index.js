@@ -10,7 +10,7 @@ export function VoiceRow({ voice, index, playAudio, stopAudio }) {
       onClick={(e) => handleVoiceSelection(voice.voiceId, voice.name)}
       className="voiceItemContainer"
     >
-      <td class="voiceSampleAndName flex items-center">
+      <td className="voiceSampleAndName flex items-center">
         <MemoizedSampleAudioVoice
           previewUrl={voice.sample}
           setAudioElement={setSampleAudioElement}

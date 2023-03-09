@@ -6,34 +6,6 @@
 .container {
   max-width: 1200px;
 }
-.generateAudio_button {
-  background-color: #fff;
-  color: #777777;
-  border: 2px solid #777777;
-  font-weight: bold;
-  padding: 8px 16px;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: border 0.3s ease-in-out, color 0.3s ease;
-}
-
-.generateAudio_button:hover {
-  background-color: #fefefe;
-  color: #f5820d;
-  border: 2px solid #f5820d;
-}
-
-.generateAudio_button:disabled {
-  opacity: 0.8;
-  pointer-events: none;
-  padding: 0 16px;
-  padding-left: 0;
-}
-
-.generateAudio_button.disabled {
-  opacity: 0.3;
-  pointer-events: none;
-}
 
 .dropdown-toggle:focus {
   border-color: orange;

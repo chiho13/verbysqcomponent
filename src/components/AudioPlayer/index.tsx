@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 
-function AudioPlayer({ generatedAudio }) {
-  const [seekValue, setSeekValue] = useState(0);
-  const [seekMax, setSeekMax] = useState(0);
+interface Props {
+  generatedAudio: HTMLAudioElement | null;
+}
+
+function AudioPlayer({ generatedAudio }: Props): JSX.Element {
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [seekValue, setSeekValue] = useState<number>(0);
+  const [seekMax, setSeekMax] = useState<number>(0);
 
   useEffect(() => {
     if (generatedAudio) {
@@ -13,6 +18,9 @@ function AudioPlayer({ generatedAudio }) {
       const handleLoadedMetadata = () => {
         setSeekMax(generatedAudio.duration);
       };
+
+      const handlePlay = () => setIsPlaying(true);
+      const handlePause = () => setIsPlaying(false);
 
       generatedAudio.addEventListener("timeupdate", handleTimeUpdate);
       generatedAudio.addEventListener("loadedmetadata", handleLoadedMetadata);
@@ -31,19 +39,19 @@ function AudioPlayer({ generatedAudio }) {
     }
   }, [generatedAudio]);
 
-  const handleSeek = (event) => {
+  const handleSeek = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (generatedAudio) {
-      generatedAudio.currentTime = event.target.value;
+      generatedAudio.currentTime = Number(event.target.value);
     }
   };
 
   return (
     <div>
-      <button onClick={() => generatedAudio.play()}>Play</button>
-      <button onClick={() => generatedAudio.pause()}>Pause</button>
+      <button onClick={() => generatedAudio?.play()}>Play</button>
+      <button onClick={() => generatedAudio?.pause()}>Pause</button>
       <button
         onClick={() => {
-          generatedAudio.pause();
+          generatedAudio?.pause();
           generatedAudio.currentTime = 0;
         }}
       >

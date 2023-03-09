@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useImperativeHandle,
   RefObject,
+  ForwardedRef,
 } from "react";
 import { DropdownStyle } from "./style";
 import useDropdown from "~/src/hooks/useDropdown";
@@ -24,7 +25,7 @@ export interface DropdownRef {
 
 function Dropdown(
   { id, selectedItemText, children, icon, minHeight = 0 }: DropdownProps,
-  ref: RefObject<DropdownRef>
+  ref: ForwardedRef<DropdownRef>
 ) {
   const { isOpen, handleOpen, handleClose } = useDropdown();
 

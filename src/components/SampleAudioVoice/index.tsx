@@ -1,6 +1,16 @@
-import React from "react";
+import React, { FunctionComponent } from "react";
 
-function SampleAudioVoice({ isPlaying, playAudio, stopAudio }) {
+interface SampleAudioVoiceProps {
+  isPlaying: boolean;
+  playAudio: () => void;
+  stopAudio: () => void;
+}
+
+const SampleAudioVoice: FunctionComponent<SampleAudioVoiceProps> = ({
+  isPlaying,
+  playAudio,
+  stopAudio,
+}) => {
   return (
     <div>
       {isPlaying ? (
@@ -8,14 +18,14 @@ function SampleAudioVoice({ isPlaying, playAudio, stopAudio }) {
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
-          stroke-width="1.5"
+          strokeWidth={1.5}
           stroke="currentColor"
-          class="stop-icon w-10 h-10"
+          className="stop-icon w-10 h-10"
           onClick={stopAudio}
         >
           <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
           <path
@@ -29,10 +39,9 @@ function SampleAudioVoice({ isPlaying, playAudio, stopAudio }) {
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
-          stroke-width="1.5"
+          strokeWidth={1.5}
           stroke="currentColor"
-          class="play-icon w-10 h-10"
-          data-preview-url="${voice.preview_url}"
+          className="play-icon w-10 h-10"
           onClick={playAudio}
         >
           <path
@@ -49,6 +58,6 @@ function SampleAudioVoice({ isPlaying, playAudio, stopAudio }) {
       )}
     </div>
   );
-}
+};
 
 export default SampleAudioVoice;

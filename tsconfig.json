@@ -13,5 +13,13 @@
       "~/*": ["*"]
     }
   },
-  "include": ["src/**/*.tsx", "src/**/*.ts"]
+  "include": [
+    "src/**/*.tsx",
+    "src/**/*.ts",
+    "src/components/Filter/index.js",
+    "src/components/Filter/index.js",
+    "src/components/Dropdown/index.js",
+    "src/components/Dropdown/index.js",
+    "src/components/Dropdown/index.js"
+  ]
 }

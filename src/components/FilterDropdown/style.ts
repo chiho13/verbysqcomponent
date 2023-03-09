@@ -1,6 +1,6 @@
-import styled from "styled-components";
+import styled, { StyledComponent } from "styled-components";
 
-export const FilterDropdownStyle = styled.div`
+export const FilterDropdownStyle: StyledComponent<"div", any> = styled.div`
   position: relative;
 
   .dropdown-menu {
