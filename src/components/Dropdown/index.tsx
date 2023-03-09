@@ -1,6 +1,14 @@
-import React, { useRef } from "react";
+import React, {
+  useRef,
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  RefObject,
+} from "react";
 import { DropdownStyle } from "./style";
 import useDropdown from "~/src/hooks/useDropdown";
+import useClickOutsideHandler from "~/src/hooks/useClickOutside";
+
 interface DropdownProps {
   id: string;
   selectedItemText: string;
@@ -9,14 +17,16 @@ interface DropdownProps {
   minHeight?: number;
 }
 
-function Dropdown({
-  id,
-  selectedItemText,
-  children,
-  icon,
-  minHeight = 0,
-}: DropdownProps) {
-  const { ref, isOpen, handleOpen, handleClose } = useDropdown();
+export interface DropdownRef {
+  handleClose: () => void;
+  wrapperRef: React.RefObject<HTMLElement>;
+}
+
+function Dropdown(
+  { id, selectedItemText, children, icon, minHeight = 0 }: DropdownProps,
+  ref: RefObject<DropdownRef>
+) {
+  const { isOpen, handleOpen, handleClose } = useDropdown();
 
   function handleVoicesDropdownClick(
     event: React.MouseEvent<HTMLButtonElement>
@@ -30,6 +40,17 @@ function Dropdown({
       handleOpen();
     }
   }
+
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useImperativeHandle(ref, () => ({
+    handleClose,
+    wrapperRef,
+  }));
+
+  useClickOutsideHandler(wrapperRef, () => {
+    handleClose();
+  });
 
   return (
     <DropdownStyle>
@@ -55,7 +76,6 @@ function Dropdown({
         aria-orientation="vertical"
         aria-labelledby="voices-dropdown"
         tabIndex={-1}
-        ref={ref}
       >
         {children}
       </div>
@@ -63,4 +83,4 @@ function Dropdown({
   );
 }
 
-export default Dropdown;
+export default forwardRef(Dropdown);

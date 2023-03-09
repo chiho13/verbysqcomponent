@@ -17,9 +17,9 @@ function useDropdown({ initialOpen = false }: UseDropdownProps = {}) {
     setIsOpen(false);
   };
 
-  useClickOutsideHandler(ref, () => {
-    setIsOpen(false);
-  });
+  // useClickOutsideHandler(ref, () => {
+  //   setIsOpen(false);
+  // });
 
   return { ref, isOpen, handleOpen, handleClose };
 }

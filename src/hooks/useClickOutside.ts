@@ -8,13 +8,7 @@ function useClickOutsideHandler(
 ) {
   useEffect(() => {
     const handleDocumentClick = (event: MouseEvent) => {
-      if (
-        ref &&
-        ref.current &&
-        !ref.current.contains(event.target as HTMLElement)
-      ) {
-        handleClickOutside(event);
-      }
+      handleClickOutside(event);
     };
 
     document.addEventListener("click", handleDocumentClick);

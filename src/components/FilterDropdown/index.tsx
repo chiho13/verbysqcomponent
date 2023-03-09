@@ -6,7 +6,7 @@ import useClickOutside from "../../hooks/useClickOutside";
 
 interface FilterProps {
   id: string;
-  options: { value: string }[];
+  options: { key: string; value: string }[];
   onChange: (option: { value: string }, ref: RefObject<HTMLDivElement>) => void;
   defaultTitle: string;
   isOpen?: boolean;

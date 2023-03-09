@@ -1,4 +1,4 @@
-import {
+import React, {
   useState,
   useEffect,
   memo,
@@ -13,7 +13,7 @@ import FilterDropdown from "../FilterDropdown";
 import Dropdown from "../Dropdown";
 import ChevronDown from "../../icons/ChevronDown";
 import { capitalize } from "../../api/util";
-
+import useClickOutsideHandler from "../../hooks/useClickOutside";
 import {
   fetchVoices,
   getAccents,
@@ -21,50 +21,72 @@ import {
   getVoiceStyles,
   getTempos,
 } from "../../api/getVoicesApi";
+import { Voice } from "../../types/voice";
 
-function VoiceDropdown({ setSelectedVoiceId }) {
-  const voicesDropdownRef = useRef({});
-  const accentFilterRef = useRef({});
-  const ageFilterRef = useRef({});
-  const voiceStylesFilterRef = useRef({});
-  const tempoFilterRef = useRef({});
+// interface Voice {
+//   name: string;
+//   voiceId: string;
+//   accent: string;
+//   age: string;
+//   style: string;
+//   tempo: string;
+//   sample: string;
+// }
 
-  const [selectedItemText, setSelectedItemText] = useState("Choose a voice");
+interface FilterOption {
+  key: string;
+  value: string;
+}
 
-  const [voices, setVoices] = useState([]);
-  // const [filteredVoices, setFilteredVoices] = useState([]);
+interface Filter {
+  key: string;
+  value: string;
+}
 
-  const [accents, setAccents] = useState([]);
-  const [ages, setAges] = useState([]);
-  const [voiceStyles, setVoiceStyles] = useState([]);
-  const [tempos, setTempos] = useState([]);
+interface VoiceDropdownProps {
+  setSelectedVoiceId: (voice: string) => void;
+}
 
-  const [playingStates, setPlayingStates] = useState(
-    new Array(voices.length).fill(false)
+function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
+  const voicesDropdownRef = useRef<any>({});
+  const accentFilterRef = useRef<any>({});
+  const ageFilterRef = useRef<any>({});
+  const voiceStylesFilterRef = useRef<any>({});
+  const tempoFilterRef = useRef<any>({});
+
+  const [selectedItemText, setSelectedItemText] =
+    useState<string>("Choose a voice");
+
+  const [voices, setVoices] = useState<Voice[]>([]);
+  const [accents, setAccents] = useState<string[]>([]);
+  const [ages, setAges] = useState<string[]>([]);
+  const [voiceStyles, setVoiceStyles] = useState<string[]>([]);
+  const [tempos, setTempos] = useState<string[]>([]);
+  const [filters, setFilters] = useState<Filter[]>([]);
+  const [selectedFilterOption, setSelectedFilterOption] =
+    useState<FilterOption>({ key: "", value: "" });
+
+  const [playingStates, setPlayingStates] = useState<boolean[]>(
+    new Array<boolean>(voices.length).fill(false)
   );
 
-  const [filters, setFilters] = useState([]);
+  const [sampleAudioElement, setSampleAudioElement] =
+    useState<HTMLAudioElement | null>(null);
 
-  const [selectedFilterOption, setSelectedFilterOption] = useState({
-    key: "",
-    value: "",
-  });
-
-  const [sampleAudioElement, setSampleAudioElement] = useState(null);
-
-  const [isFiltering, setIsFiltering] = useState(false);
+  const [isFiltering, setIsFiltering] = useState<boolean>(false);
 
   const MemoizedSampleAudioVoice = memo(SampleAudioVoice);
 
-  const [isOpen, setActiveFilter] = useState("");
+  const [isOpen, setActiveFilter] = useState<string>("");
 
-  const filteredVoices = useMemo(() => {
+  const filteredVoices = useMemo<Voice[]>(() => {
     if (filters.length === 0) {
       return voices;
     }
 
     let filtered = voices.filter((voice) => {
       return filters.every((filter) => {
+        // Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Voice'.
         return voice[filter.key] === filter.value.toLowerCase();
       });
     });
@@ -74,6 +96,7 @@ function VoiceDropdown({ setSelectedVoiceId }) {
         return (
           voice[selectedFilterOption.key] ===
           selectedFilterOption.value.toLowerCase()
+          // Element implicitly has an 'any' type because expression of type 'string' can't be used to index type 'Voice'.
         );
       });
     }
@@ -83,35 +106,34 @@ function VoiceDropdown({ setSelectedVoiceId }) {
 
   useEffect(() => {
     fetchVoices()
-      .then((voices) => {
+      .then((voices: Voice[]) => {
         setVoices(voices);
         setAccents(getAccents(voices));
         setAges(getAges(voices));
         setVoiceStyles(getVoiceStyles(voices));
         setTempos(getTempos(voices));
-
-        console.log(voices);
       })
-      .catch((error) => console.error(error));
+      .catch((error: Error) => console.error(error));
   }, []);
 
-  function handleVoiceSelection(voice, name) {
+  function handleVoiceSelection(voice: string, name: string): void {
     setSelectedVoiceId(voice);
     setSelectedItemText(name);
-    // if (voicesDropdownRef.current && voicesDropdownRef.current.classList) {
-    //   voicesDropdownRef.current.classList.remove("show");
-    // }
+
+    if (voicesDropdownRef.current) {
+      voicesDropdownRef.current.handleClose();
+    }
   }
 
   const playAudio = useCallback(
-    (index) => {
+    (index: number): void => {
       if (sampleAudioElement) {
         sampleAudioElement.currentTime = 0;
         sampleAudioElement.pause();
 
-        const prevIndex = playingStates.findIndex((state) => state);
+        const prevIndex = playingStates.findIndex((state: boolean) => state);
         if (prevIndex !== -1) {
-          setPlayingStates((prevStates) => {
+          setPlayingStates((prevStates: boolean[]) => {
             const newStates = [...prevStates];
             newStates[prevIndex] = false;
             return newStates;
@@ -127,15 +149,15 @@ function VoiceDropdown({ setSelectedVoiceId }) {
 
       newAudioElement.play();
       setSampleAudioElement(newAudioElement);
-      //   setIsPlaying(true);
-      setPlayingStates((prevStates) => {
+
+      setPlayingStates((prevStates: boolean[]) => {
         const newStates = [...prevStates];
         newStates[index] = true;
         return newStates;
       });
 
       newAudioElement.addEventListener("ended", () => {
-        setPlayingStates((prevStates) => {
+        setPlayingStates((prevStates: boolean[]) => {
           const newStates = [...prevStates];
           newStates[index] = false;
           return newStates;
@@ -146,12 +168,12 @@ function VoiceDropdown({ setSelectedVoiceId }) {
   );
 
   const stopAudio = useCallback(
-    (index) => {
+    (index: number): void => {
       if (sampleAudioElement) {
         sampleAudioElement.currentTime = 0;
         sampleAudioElement.pause();
       }
-      setPlayingStates((prevStates) => {
+      setPlayingStates((prevStates: boolean[]) => {
         const newStates = [...prevStates];
         newStates[index] = false;
         return newStates;
@@ -160,21 +182,22 @@ function VoiceDropdown({ setSelectedVoiceId }) {
     [sampleAudioElement]
   );
 
-  function onFilterChange(option, ref) {
-    // Otherwise, filter the voices array by the selected accent value
-    console.log(option);
+  interface FilterOption {
+    key: string;
+    value: string;
+  }
+
+  function onFilterChange(option: FilterOption, ref: any): void {
     setSelectedFilterOption(option);
-    setFilters((prevFilters) => {
+    setFilters((prevFilters: FilterOption[]) => {
       const newFilters = [...prevFilters];
       const { key, value } = option;
       const existingFilterIndex = newFilters.findIndex(
         (filter) => filter.key === key
       );
       if (existingFilterIndex !== -1) {
-        // If a filter with this key already exists, update its value
         newFilters[existingFilterIndex].value = value;
       } else {
-        // Otherwise, add a new filter
         newFilters.push({ key, value });
       }
       return newFilters;
@@ -187,7 +210,7 @@ function VoiceDropdown({ setSelectedVoiceId }) {
     setIsFiltering(filteredVoices.length > 0 && filters.length > 0);
   }, [filteredVoices, filters]);
 
-  function clearFilters() {
+  function clearFilters(): void {
     setIsFiltering(false);
     setFilters([]);
     setSelectedFilterOption({
@@ -196,14 +219,14 @@ function VoiceDropdown({ setSelectedVoiceId }) {
     });
   }
 
-  function clearIndividualFilter(key, value) {
-    setFilters((prevFilters) => {
+  function clearIndividualFilter(key: string, value: string): void {
+    setFilters((prevFilters: FilterOption[]) => {
       return prevFilters.filter(
         (filter) => filter.key !== key || filter.value !== value
       );
     });
 
-    setSelectedFilterOption((prevSelectedFilterOption) => {
+    setSelectedFilterOption((prevSelectedFilterOption: FilterOption) => {
       return prevSelectedFilterOption.key === key &&
         prevSelectedFilterOption.value === value
         ? { key: "", value: "" }
@@ -211,16 +234,22 @@ function VoiceDropdown({ setSelectedVoiceId }) {
     });
   }
 
-  function VoiceRow({ voice, index }) {
-    const capitalize = (str) =>
+  interface VoiceRowProps {
+    voice: Voice;
+    index: number;
+  }
+
+  const VoiceRow: React.FC<VoiceRowProps> = ({ voice, index }) => {
+    const capitalize = (str: string) =>
       str && str.charAt(0).toUpperCase() + str.slice(1);
+
     return (
       <tr
         key={index}
         onClick={(e) => handleVoiceSelection(voice.voiceId, voice.name)}
         className="voiceItemContainer"
       >
-        <td class="voiceSampleAndName flex items-center">
+        <td className="voiceSampleAndName flex items-center">
           <MemoizedSampleAudioVoice
             isPlaying={playingStates[index]}
             playAudio={(e) => {
@@ -240,7 +269,7 @@ function VoiceDropdown({ setSelectedVoiceId }) {
         <td>{capitalize(voice.tempo)}</td>
       </tr>
     );
-  }
+  };
 
   return (
     <VoiceDropdownStyle>
@@ -294,7 +323,7 @@ function VoiceDropdown({ setSelectedVoiceId }) {
                 </div>
 
                 <button
-                  class="filter_reset inline-flex justify-center rounded-md bg-white border-2 border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 outline-none focus:outline-none"
+                  className="filter_reset inline-flex justify-center rounded-md bg-white border-2 border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 outline-none focus:outline-none"
                   onClick={(e) => {
                     e.stopPropagation();
                     clearFilters();
@@ -309,8 +338,8 @@ function VoiceDropdown({ setSelectedVoiceId }) {
             <table className="dropdown_table w-full table-auto">
               <thead className="voiceTitles w-full p-4">
                 <tr>
-                  <th class="nameHeader text-left">Name</th>
-                  <th class="text-left">
+                  <th className="nameHeader text-left">Name</th>
+                  <th className="text-left">
                     <FilterDropdown
                       id="accent"
                       options={accents}
@@ -385,7 +414,7 @@ function VoiceDropdown({ setSelectedVoiceId }) {
 
             {!isFiltering &&
               !(filters.length > 0 && filteredVoices.length > 0) && (
-                <div class="filter_noResult">
+                <div className="filter_noResult">
                   No Voices found for selected filters
                 </div>
               )}
