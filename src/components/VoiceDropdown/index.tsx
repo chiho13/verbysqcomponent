@@ -23,16 +23,6 @@ import {
 } from "../../api/getVoicesApi";
 import { Voice } from "../../types/voice";
 
-// interface Voice {
-//   name: string;
-//   voiceId: string;
-//   accent: string;
-//   age: string;
-//   style: string;
-//   tempo: string;
-//   sample: string;
-// }
-
 interface FilterOption {
   key: string;
   value: string;
@@ -207,7 +197,7 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
   }
 
   useLayoutEffect(() => {
-    setIsFiltering(filteredVoices.length > 0 && filters.length > 0);
+    setIsFiltering(filteredVoices.length === 0 && filters.length > 0);
   }, [filteredVoices, filters]);
 
   function clearFilters(): void {
@@ -387,7 +377,7 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
               </thead>
 
               <tbody className="w-full">
-                {isFiltering &&
+                {filteredVoices &&
                   filteredVoices.map((voice, index) => (
                     <VoiceRow
                       voice={voice}
@@ -412,7 +402,7 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
               </tbody>
             </table>
 
-            {!isFiltering &&
+            {isFiltering &&
               !(filters.length > 0 && filteredVoices.length > 0) && (
                 <div className="filter_noResult">
                   No Voices found for selected filters
