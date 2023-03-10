@@ -94,6 +94,8 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
     return filtered;
   }, [voices, filters, selectedFilterOption]);
 
+  const stopButtonRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     fetchVoices()
       .then((voices: Voice[]) => {
@@ -233,21 +235,10 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
     const capitalize = (str: string) =>
       str && str.charAt(0).toUpperCase() + str.slice(1);
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTableRowElement>) => {
-      e.stopPropagation();
-      if (e.key === "Enter") {
-        if (document.activeElement === e.currentTarget) {
-          e.stopPropagation();
-          handleVoiceSelection(voice.voiceId, voice.name);
-        }
-      }
-    };
-
     return (
       <tr
         key={index}
         onClick={(e) => handleVoiceSelection(voice.voiceId, voice.name)}
-        onKeyDown={handleKeyDown}
         className="voiceItemContainer"
         tabIndex={0}
         role="row"

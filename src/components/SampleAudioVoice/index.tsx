@@ -16,6 +16,11 @@ const SampleAudioVoice: FunctionComponent<SampleAudioVoiceProps> = ({
   playAudio,
   stopAudio,
 }) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  };
   return (
     <SampleAudioVoiceStyle
       tabIndex={0}
@@ -23,6 +28,7 @@ const SampleAudioVoice: FunctionComponent<SampleAudioVoiceProps> = ({
       aria-label={isPlaying ? "Stop audio" : "Play audio"}
       aria-pressed={isPlaying}
       onClick={isPlaying ? stopAudio : playAudio}
+      onKeyDown={handleKeyDown}
     >
       {isPlaying ? (
         <svg
