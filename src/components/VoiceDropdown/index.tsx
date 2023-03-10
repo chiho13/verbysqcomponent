@@ -233,11 +233,25 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
     const capitalize = (str: string) =>
       str && str.charAt(0).toUpperCase() + str.slice(1);
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTableRowElement>) => {
+      e.stopPropagation();
+      if (e.key === "Enter") {
+        if (document.activeElement === e.currentTarget) {
+          e.stopPropagation();
+          handleVoiceSelection(voice.voiceId, voice.name);
+        }
+      }
+    };
+
     return (
       <tr
         key={index}
         onClick={(e) => handleVoiceSelection(voice.voiceId, voice.name)}
+        onKeyDown={handleKeyDown}
         className="voiceItemContainer"
+        tabIndex={0}
+        role="row"
+        aria-label={`Selected Voice: ${voice.name}, ${voice.accent} accent, ${voice.age} age, ${voice.style} style, ${voice.tempo} tempo`}
       >
         <td className="voiceSampleAndName flex items-center">
           <MemoizedSampleAudioVoice
@@ -287,11 +301,12 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
                         {`${capitalize(key)}: ${value}`}
                         {/* using string interpolation */}
                         <button
-                          className="ml-2 focus:outline-none"
+                          className="ml-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-opacity-50 focus-visible:outline-none"
                           onClick={(e) => {
                             e.stopPropagation();
                             clearIndividualFilter(key, value);
                           }}
+                          aria-label={`"Clear Filter" ${value} ${key}`}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -313,11 +328,13 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
                 </div>
 
                 <button
-                  className="filter_reset inline-flex justify-center rounded-md bg-white border-2 border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 outline-none focus:outline-none"
+                  className="filter_reset inline-flex justify-center rounded-md bg-white border-2 border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-opacity-50 focus-visible:outline-none"
                   onClick={(e) => {
                     e.stopPropagation();
                     clearFilters();
                   }}
+                  aria-label="Clear Filters"
+                  title="Click to clear all applied filters"
                 >
                   Clear Filters
                 </button>

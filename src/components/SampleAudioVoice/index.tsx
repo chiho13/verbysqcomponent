@@ -1,4 +1,9 @@
 import React, { FunctionComponent } from "react";
+import styled from "styled-components";
+
+const SampleAudioVoiceStyle = styled.button`
+  margin-right: 20px;
+`;
 
 interface SampleAudioVoiceProps {
   isPlaying: boolean;
@@ -12,7 +17,13 @@ const SampleAudioVoice: FunctionComponent<SampleAudioVoiceProps> = ({
   stopAudio,
 }) => {
   return (
-    <div>
+    <SampleAudioVoiceStyle
+      tabIndex={0}
+      role="button"
+      aria-label={isPlaying ? "Stop audio" : "Play audio"}
+      aria-pressed={isPlaying}
+      onClick={isPlaying ? stopAudio : playAudio}
+    >
       {isPlaying ? (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -21,7 +32,6 @@ const SampleAudioVoice: FunctionComponent<SampleAudioVoiceProps> = ({
           strokeWidth={1.5}
           stroke="currentColor"
           className="stop-icon w-10 h-10"
-          onClick={stopAudio}
         >
           <path
             strokeLinecap="round"
@@ -42,7 +52,6 @@ const SampleAudioVoice: FunctionComponent<SampleAudioVoiceProps> = ({
           strokeWidth={1.5}
           stroke="currentColor"
           className="play-icon w-10 h-10"
-          onClick={playAudio}
         >
           <path
             strokeLinecap="round"
@@ -56,7 +65,7 @@ const SampleAudioVoice: FunctionComponent<SampleAudioVoiceProps> = ({
           />
         </svg>
       )}
-    </div>
+    </SampleAudioVoiceStyle>
   );
 };
 

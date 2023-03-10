@@ -57,7 +57,6 @@ export const VoiceDropdownStyle = styled.div`
     cursor: pointer;
     width: 34px;
     height: 34px;
-    margin-right: 20px;
   }
 
   .play-icon path,
