@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+import { AudioPlayerStyle } from "./style";
+
 interface Props {
   generatedAudio: HTMLAudioElement | null;
 }
@@ -39,14 +41,31 @@ function AudioPlayer({ generatedAudio }: Props): JSX.Element {
     }
   }, [generatedAudio]);
 
-  const handleSeek = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSeek = (event: React.MouseEvent<HTMLDivElement>) => {
     if (generatedAudio) {
-      generatedAudio.currentTime = Number(event.target.value);
+      const rect = event.currentTarget.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const width = rect.width;
+      const percent = x / width;
+      generatedAudio.currentTime = percent * generatedAudio.duration;
+      setSeekValue(generatedAudio.currentTime);
     }
   };
 
   return (
-    <div>
+    <AudioPlayerStyle>
+      <div className="audioPlayer_timeline" onClick={handleSeek}>
+        <div
+          style={{
+            width: `${(seekValue / seekMax) * 100}%`,
+            height: "5px",
+            backgroundColor: "#f5820d",
+            position: "absolute",
+            top: 0,
+            left: 0,
+          }}
+        ></div>
+      </div>
       <button onClick={() => generatedAudio?.play()}>Play</button>
       <button onClick={() => generatedAudio?.pause()}>Pause</button>
       <button
@@ -57,15 +76,7 @@ function AudioPlayer({ generatedAudio }: Props): JSX.Element {
       >
         Stop
       </button>
-      <input
-        type="range"
-        min="0"
-        max={seekMax}
-        step="0.01"
-        value={seekValue}
-        onChange={handleSeek}
-      />
-    </div>
+    </AudioPlayerStyle>
   );
 }
 

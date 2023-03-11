@@ -19,7 +19,7 @@ export const GenerateButtonStyle: StyledComponent<
   border-radius: 0.25rem;
   opacity: ${({ isDisabled }) => (isDisabled ? "0.5" : "1")};
   cursor: ${({ isDisabled }) => (isDisabled ? "not-allowed" : "pointer")};
-  transition: border 0.3s ease-in-out, opacity 0.3s ease;
+  transition: border 0.3s ease-in-out, opacity 0.3s ease, color 0.3s ease;
 
   &:hover {
     background-color: #fefefe;
