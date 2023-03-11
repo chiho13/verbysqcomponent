@@ -1,16 +1,32 @@
-import React, { useState, useEffect, forwardRef, RefObject } from "react";
+import React, {
+  useState,
+  useEffect,
+  forwardRef,
+  RefObject,
+  ForwardedRef,
+  lazy,
+  Suspense,
+} from "react";
 import Dropdown from "../Dropdown";
 import { FilterDropdownStyle } from "./style";
 import FilterIcon from "../../icons/FilterIcon";
 import useClickOutside from "../../hooks/useClickOutside";
+import { flags } from "../../icons/flags";
 
 interface FilterProps {
   id: string;
-  options: { key: string; value: string }[];
-  onChange: (option: { value: string }, ref: RefObject<HTMLDivElement>) => void;
+  options: { key: string; value: string };
+  onChange: (
+    option: { value: string },
+    ref: ForwardedRef<HTMLDivElement>
+  ) => void;
   defaultTitle: string;
   isOpen?: boolean;
-  setActiveFilter: (id: string) => void;
+  setActiveFilter: any;
+}
+
+interface FlagProps {
+  name: string;
 }
 
 function Filter(
@@ -22,7 +38,7 @@ function Filter(
     isOpen = false,
     setActiveFilter,
   }: FilterProps,
-  ref: RefObject<HTMLDivElement>
+  ref: ForwardedRef<HTMLDivElement>
 ) {
   const [selectedOption, setSelectedOption] = useState(defaultTitle);
 
@@ -42,10 +58,11 @@ function Filter(
   ) {
     event.preventDefault();
     event.stopPropagation();
-    setActiveFilter(id);
+    setActiveFilter((prevState: string) => (prevState === id ? "" : id));
   }
+
   useClickOutside(ref, () => {
-    setActiveFilter("false");
+    setActiveFilter("");
   });
 
   return (
@@ -87,7 +104,12 @@ function Filter(
                   handleOptionChange(option);
                 }}
               >
-                {option.value}
+                <span className="flex items-center">
+                  {option.key === "accent" && (
+                    <img src={flags[option.value]} width="24" />
+                  )}
+                  {option.value}
+                </span>
               </a>
             </li>
           ))}

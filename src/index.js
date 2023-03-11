@@ -19,7 +19,6 @@ function App() {
 
   const [audioIsLoading, setAudioIsLoading] = React.useState(false);
 
-  // const [generatedAudio, setGeneratedAudio] = React.useState(null);
   // const [downloadLink, setDownloadLink] = useState(null);
 
   function handleTextChange(event) {
@@ -37,51 +36,6 @@ function App() {
     setStatus,
     setAudioIsLoading
   );
-  // const intervalRef = useRef(null);
-
-  // useEffect(() => {
-  //   // Clear previous interval
-  //   clearInterval(intervalRef.current);
-
-  //   // Start polling for status updates
-  //   intervalRef.current = setInterval(async () => {
-  //     if (transcriptionId) {
-  //       try {
-  //         const response = await fetch(
-  //           `https://verbyttsapi.vercel.app/articleStatus/${transcriptionId}`
-  //         );
-  //         if (!response.ok) {
-  //           throw new Error(`HTTP error! status: ${response.status}`);
-  //         }
-  //         const data = await response.json();
-  //         console.log(data);
-
-  //         setStatus(data.transcriped);
-
-  //         if (status && data.audioUrl && data.audioUrl.length > 0) {
-  //           const newAudioElement = new Audio(data.audioUrl[0]);
-  //           newAudioElement.addEventListener("error", (e) => {
-  //             console.error("Error playing audio:", e);
-  //           });
-  //           // newAudioElement.play();
-  //           setGeneratedAudio(newAudioElement);
-  //           setAudioIsLoading(false);
-  //         }
-
-  //         // Clear the interval when transcription is complete
-  //         if (data.transcriped) {
-  //           clearInterval(intervalRef.current);
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching transcription status:", error);
-  //         // TODO: Handle error (e.g. show error message to user)
-  //       }
-  //     }
-  //   }, 1000);
-
-  //   // Stop polling when the component unmounts or the transcriptionId or status changes
-  //   return () => clearInterval(intervalRef.current);
-  // }, [transcriptionId, status]);
 
   async function generateAudio(event) {
     event.preventDefault();

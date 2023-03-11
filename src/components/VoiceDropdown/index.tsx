@@ -14,6 +14,8 @@ import Dropdown from "../Dropdown";
 import ChevronDown from "../../icons/ChevronDown";
 import { capitalize } from "../../api/util";
 import useClickOutsideHandler from "../../hooks/useClickOutside";
+import { flags } from "~/src/icons/flags";
+
 import {
   fetchVoices,
   getAccents,
@@ -39,6 +41,8 @@ interface VoiceDropdownProps {
 
 function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
   const voicesDropdownRef = useRef<any>({});
+  const [voiceDropdownIsOpen, setIsOpen] = useState(false);
+
   const accentFilterRef = useRef<any>({});
   const ageFilterRef = useRef<any>({});
   const voiceStylesFilterRef = useRef<any>({});
@@ -258,13 +262,31 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
           />
           {voice.name}
         </td>
-        <td>{capitalize(voice.accent)}</td>
+        <td>
+          <span className="flex items-center">
+            <img
+              src={flags[voice.accent]}
+              alt={voice.accent}
+              width={28}
+              className="flag-icon"
+            />
+            {capitalize(voice.accent)}
+          </span>
+        </td>
         <td>{capitalize(voice.age)}</td>
         <td>{capitalize(voice.style)}</td>
         <td>{capitalize(voice.tempo)}</td>
       </tr>
     );
   };
+
+  useEffect(() => {
+    console.log(voicesDropdownRef.current.isOpen);
+  }, [voicesDropdownRef.current.isOpen]);
+
+  function closeDropdown() {
+    voicesDropdownRef.current.handleClose();
+  }
 
   return (
     <VoiceDropdownStyle>
@@ -274,6 +296,8 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
         ref={voicesDropdownRef}
         icon={<ChevronDown />}
         minHeight={450}
+        isOpen={voiceDropdownIsOpen}
+        setIsOpen={setIsOpen}
       >
         <div>
           <div>

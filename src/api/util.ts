@@ -14,7 +14,7 @@ export const getUniqueValues = (
   return uniqueValues.map((value) => {
     return {
       key,
-      value: capitalize(value),
+      value,
     };
   });
 };

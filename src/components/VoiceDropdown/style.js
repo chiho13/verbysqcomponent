@@ -59,6 +59,10 @@ export const VoiceDropdownStyle = styled.div`
     height: 34px;
   }
 
+  .flag-icon {
+    margin-right: 10px;
+  }
+
   .play-icon path,
   .stop-icon path {
     stroke: #777777;
@@ -85,6 +89,10 @@ export const VoiceDropdownStyle = styled.div`
     cursor: pointer;
     position: relative;
     top: 10px;
+
+    td {
+      border-bottom: 1px solid #e6ebf4;
+    }
   }
   .voiceItemContainer:hover {
     background-color: #eeeeee;
@@ -130,5 +138,16 @@ export const VoiceDropdownStyle = styled.div`
 
   .voiceSampleAndName {
     padding-left: 20px;
+  }
+
+  .closeOutside {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(109.6deg, rgb(20, 30, 48) 11.2%, rgb(36, 59, 85) 91.1%);
+    opacity: 0.5;
   }
 `;
