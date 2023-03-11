@@ -92,6 +92,7 @@ export const VoiceDropdownStyle = styled.div`
 
     td {
       border-bottom: 1px solid #e6ebf4;
+      text-transform: capitalize;
     }
   }
   .voiceItemContainer:hover {

@@ -270,12 +270,12 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
               width={28}
               className="flag-icon"
             />
-            {capitalize(voice.accent)}
+            {voice.accent}
           </span>
         </td>
-        <td>{capitalize(voice.age)}</td>
-        <td>{capitalize(voice.style)}</td>
-        <td>{capitalize(voice.tempo)}</td>
+        <td>{voice.age}</td>
+        <td>{voice.style}</td>
+        <td>{voice.tempo}</td>
       </tr>
     );
   };

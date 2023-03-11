@@ -1,6 +1,3 @@
-export const capitalize = (str: string): string =>
-  str && str.charAt(0).toUpperCase() + str.slice(1);
-
 interface UniqueValue {
   key: string;
   value: string;
