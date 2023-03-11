@@ -12,7 +12,6 @@ import { VoiceDropdownStyle } from "./style";
 import FilterDropdown from "../FilterDropdown";
 import Dropdown from "../Dropdown";
 import ChevronDown from "../../icons/ChevronDown";
-import { capitalize } from "../../api/util";
 import useClickOutsideHandler from "../../hooks/useClickOutside";
 import { flags } from "~/src/icons/flags";
 
@@ -108,6 +107,8 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
         setAges(getAges(voices));
         setVoiceStyles(getVoiceStyles(voices));
         setTempos(getTempos(voices));
+
+        console.log(voices);
       })
       .catch((error: Error) => console.error(error));
   }, []);
@@ -313,7 +314,7 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
                         key={`${key}-${value}`}
                         className="filter_pill inline-flex items-center text-sm font-medium bg-gray-100 text-gray-800 mr-2"
                       >
-                        {`${capitalize(key)}: ${value}`}
+                        {`${key}: ${value}`}
                         {/* using string interpolation */}
                         <button
                           className="ml-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-opacity-50 focus-visible:outline-none"

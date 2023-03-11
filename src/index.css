@@ -5,6 +5,7 @@
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
 .container {
   max-width: 1200px;
+  margin-top: 50px;
 }
 
 .dropdown-toggle:focus {
@@ -15,4 +16,9 @@
   flex-shrink: 0;
   width: 40px;
   height: 40px;
+}
+
+.textarea_input {
+  background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }

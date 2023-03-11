@@ -11,6 +11,17 @@ import GenerateButton from "./components/GenerateButton";
 import { ttsApi } from "./api/ttsApi";
 
 import useStatusPolling from "./hooks/useStatusPolling";
+import { ThemeProvider } from "styled-components";
+
+const theme = {
+  colors: {
+    brand: "#f5820d",
+    white: "#ffffff",
+  },
+  background: {
+    white: "linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)",
+  },
+};
 
 function App() {
   const [selectedVoiceId, setSelectedVoiceId] = React.useState("");
@@ -35,6 +46,10 @@ function App() {
     status,
     setStatus,
     setAudioIsLoading
+  );
+
+  const dummyAudioElement = new Audio(
+    "https://peregrine-samples.s3.amazonaws.com/editor-samples/anny.wav"
   );
 
   async function generateAudio(event) {
@@ -97,34 +112,37 @@ function App() {
   }, [selectedVoiceId, enteredText]);
 
   return (
-    <div className="container p-4 mx-auto">
-      <VoiceDropdown setSelectedVoiceId={setSelectedVoiceId} />
+    <ThemeProvider theme={theme}>
+      <div className="container p-4 mx-auto">
+        <VoiceDropdown setSelectedVoiceId={setSelectedVoiceId} />
 
-      <form id="text-form">
-        <label htmlFor="text" className="block mb-2">
-          Enter text (max. 1000 characters):
-        </label>
-        <textarea
-          id="text"
-          name="text"
-          rows="8"
-          cols="50"
-          maxLength="1000"
-          className="textarea_input block w-full mb-4 bg-gray-100 p-4 resize-none border-gray-300 border-2 rounded-md focus:outline-none focus-visible:border-orange-500"
-          onChange={handleTextChange}
-        ></textarea>
-        <GenerateButton
-          isDisabled={isDisabled}
-          audioIsLoading={audioIsLoading}
-          onClick={generateAudio}
-        />
-      </form>
-      <div id="download-container" className="mt-4"></div>
-      {!audioIsLoading && generatedAudioElement && (
+        <form id="text-form">
+          <label htmlFor="text" className="block mb-2">
+            Enter text (max. 1000 characters):
+          </label>
+          <textarea
+            id="text"
+            name="text"
+            rows="8"
+            cols="50"
+            maxLength="1000"
+            className="textarea_input block w-full mb-4 p-4 resize-none border-gray-300 rounded-md focus:outline-none focus-visible:border-orange-500"
+            onChange={handleTextChange}
+          ></textarea>
+          <GenerateButton
+            isDisabled={isDisabled}
+            audioIsLoading={audioIsLoading}
+            onClick={generateAudio}
+          />
+        </form>
+        <div id="download-container" className="mt-4"></div>
+        {/* {!audioIsLoading && generatedAudioElement && (
         <AudioPlayer generatedAudio={generatedAudioElement} />
-      )}
-      {audioUrl && <DownloadButton audioUrl={audioUrl} />}
-    </div>
+      )} */}
+        <AudioPlayer generatedAudio={dummyAudioElement} />
+        {audioUrl && <DownloadButton audioUrl={audioUrl} />}
+      </div>
+    </ThemeProvider>
   );
 }
 window.onload = function () {
