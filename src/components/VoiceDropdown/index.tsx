@@ -42,6 +42,7 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
   const voicesDropdownRef = useRef<any>({});
   const [voiceDropdownIsOpen, setIsOpen] = useState(false);
 
+  const genderFilterRef = useRef<any>({});
   const accentFilterRef = useRef<any>({});
   const ageFilterRef = useRef<any>({});
   const voiceStylesFilterRef = useRef<any>({});
@@ -56,6 +57,18 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
   const [voiceStyles, setVoiceStyles] = useState<string[]>([]);
   const [tempos, setTempos] = useState<string[]>([]);
   const [filters, setFilters] = useState<Filter[]>([]);
+
+  const genders = [
+    {
+      key: "gender",
+      value: "male",
+    },
+    {
+      key: "gender",
+      value: "female",
+    },
+  ];
+
   const [selectedFilterOption, setSelectedFilterOption] =
     useState<FilterOption>({ key: "", value: "" });
 
@@ -263,6 +276,7 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
           />
           {voice.name}
         </td>
+        <td>{voice.gender}</td>
         <td>
           <span className="flex items-center">
             <img
@@ -362,6 +376,17 @@ function VoiceDropdown({ setSelectedVoiceId }: VoiceDropdownProps) {
               <thead className="voiceTitles w-full p-4">
                 <tr>
                   <th className="nameHeader text-left">Name</th>
+                  <th className="text-left">
+                    <FilterDropdown
+                      id="gender"
+                      options={genders}
+                      defaultTitle="Gender"
+                      onChange={onFilterChange}
+                      ref={genderFilterRef}
+                      setActiveFilter={setActiveFilter}
+                      isOpen={isOpen === "gender"}
+                    />
+                  </th>
                   <th className="text-left">
                     <FilterDropdown
                       id="accent"

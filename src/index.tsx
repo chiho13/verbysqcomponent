@@ -5,7 +5,6 @@ import "./index.css";
 
 import AudioPlayer from "./components/AudioPlayer";
 import VoiceDropdown from "./components/VoiceDropdown";
-import LoadingSpinner from "./icons/LoadingSpinner";
 import GenerateButton from "./components/GenerateButton";
 
 import { ttsApi } from "./api/ttsApi";
@@ -13,7 +12,17 @@ import { ttsApi } from "./api/ttsApi";
 import useStatusPolling from "./hooks/useStatusPolling";
 import { ThemeProvider } from "styled-components";
 
-const theme = {
+interface Theme {
+  colors: {
+    brand: string;
+    white: string;
+  };
+  background: {
+    white: string;
+  };
+}
+
+const theme: Theme = {
   colors: {
     brand: "#f5820d",
     white: "#ffffff",
@@ -23,41 +32,39 @@ const theme = {
   },
 };
 
-function App() {
-  const [selectedVoiceId, setSelectedVoiceId] = React.useState("");
+function App(): JSX.Element {
+  const [selectedVoiceId, setSelectedVoiceId] = React.useState<string>("");
 
-  const [enteredText, setEnteredText] = React.useState("");
+  const [enteredText, setEnteredText] = React.useState<string>("");
 
-  const [audioIsLoading, setAudioIsLoading] = React.useState(false);
+  const [audioIsLoading, setAudioIsLoading] = React.useState<boolean>(false);
 
-  // const [downloadLink, setDownloadLink] = useState(null);
-
-  function handleTextChange(event) {
+  function handleTextChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
     setEnteredText(event.target.value);
   }
 
-  const [transcriptionId, setTranscriptionId] = useState("");
-  const [status, setStatus] = useState("");
-  const [audioUrl, setAudioUrl] = useState("");
+  const [transcriptionId, setTranscriptionId] = useState<string>("");
+  const [status, setStatus] = useState<string>("");
+  const [audioUrl, setAudioUrl] = useState<string>("");
 
-  // const [generatedAudio, setGeneratedAudio] = useState(null);
-  const [generatedAudioElement, setGeneratedAudioElement] = useStatusPolling(
-    transcriptionId,
-    status,
-    setStatus,
-    setAudioIsLoading
-  );
+  const [generatedAudioElement, setGeneratedAudioElement] =
+    useStatusPolling<HTMLAudioElement>(
+      transcriptionId,
+      status,
+      setStatus,
+      setAudioIsLoading
+    );
 
   const dummyAudioElement = new Audio(
     "https://peregrine-samples.s3.amazonaws.com/editor-samples/anny.wav"
   );
 
-  async function generateAudio(event) {
+  async function generateAudio(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     setAudioIsLoading(true);
     setGeneratedAudioElement(null);
-    setStatus(false);
+    setStatus("");
     setTranscriptionId("");
 
     const requestBody = {
@@ -74,7 +81,11 @@ function App() {
     }
   }
 
-  function DownloadButton({ audioUrl }) {
+  interface DownloadButtonProps {
+    audioUrl: string;
+  }
+
+  function DownloadButton({ audioUrl }: DownloadButtonProps): JSX.Element {
     const handleDownload = async () => {
       try {
         const response = await fetch(audioUrl);
@@ -101,7 +112,7 @@ function App() {
     );
   }
 
-  const [isDisabled, setIsDisabled] = React.useState(true);
+  const [isDisabled, setIsDisabled] = React.useState<boolean>(true);
 
   React.useEffect(() => {
     if (selectedVoiceId && enteredText) {
@@ -126,7 +137,7 @@ function App() {
             rows="8"
             cols="50"
             maxLength="1000"
-            className="textarea_input block w-full mb-4 p-4 resize-none border-gray-300 rounded-md focus:outline-none focus-visible:border-orange-500"
+            className="textarea_input block w-full mb-4 p-4 resize-none border-2 border-gray-100 rounded-md focus:outline-none focus-visible:border-orange-500"
             onChange={handleTextChange}
           ></textarea>
           <GenerateButton

@@ -24,6 +24,9 @@ function AudioPlayer({ generatedAudio }: Props): JSX.Element {
 
   useEffect(() => {
     if (generatedAudio) {
+      generatedAudio.play();
+      setIsPlaying(true);
+
       const handleTimeUpdate = () => {
         if (!isSeeking) {
           setSeekValue(generatedAudio.currentTime);

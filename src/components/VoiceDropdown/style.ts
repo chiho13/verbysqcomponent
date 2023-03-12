@@ -62,7 +62,7 @@ export const VoiceDropdownStyle = styled.div`
   }
   
   .dropdown_table_wrapper::-webkit-scrollbar-thumb {
-    background: ${(props) => props.theme.colors.brand};
+    background: #aaaaaa;
     border-radius: 5px;
   }
   
