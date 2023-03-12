@@ -4,7 +4,7 @@ export const AudioPlayerStyle: StyledComponent<"div", any> = styled.div`
   position: relative;
   display: flex;
   align-items: center;
-  max-width: 400px;
+  max-width: 500px;
   padding: 20px;
   border-radius: 8px;
   border: 1px solid #eeeeee;
@@ -12,8 +12,10 @@ export const AudioPlayerStyle: StyledComponent<"div", any> = styled.div`
   background: ${(props) => props.theme.background.white};}
 
   .audioPlayer_current-time, .audioPlayer_max-time {
+    display: block;
     font-size: 14px;
     margin-left: 10px;
+    width: 35px
   }
     
   .audioPlayer_timeline_container {

@@ -8,11 +8,14 @@ import { PauseIcon } from "~/src/icons/Pause";
 import { useTheme } from "styled-components";
 import React from "react";
 
+import { DownloadButton } from "../DownloadButton";
+
 interface Props {
   generatedAudio: HTMLAudioElement | null;
+  transcriptionId: string;
 }
 
-function AudioPlayer({ generatedAudio }: Props): JSX.Element {
+function AudioPlayer({ generatedAudio, transcriptionId }: Props): JSX.Element {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [seekValue, setSeekValue] = useState<number>(0);
   const [seekMax, setSeekMax] = useState<number>(0);
@@ -24,9 +27,6 @@ function AudioPlayer({ generatedAudio }: Props): JSX.Element {
 
   useEffect(() => {
     if (generatedAudio) {
-      generatedAudio.play();
-      setIsPlaying(true);
-
       const handleTimeUpdate = () => {
         if (!isSeeking) {
           setSeekValue(generatedAudio.currentTime);
@@ -60,6 +60,15 @@ function AudioPlayer({ generatedAudio }: Props): JSX.Element {
       };
     }
   }, [generatedAudio, isSeeking]);
+
+  useEffect(() => {
+    if (generatedAudio) {
+      generatedAudio;
+      generatedAudio.play();
+      setIsPlaying(true);
+      console.log(generatedAudio.src);
+    }
+  }, [generatedAudio]);
 
   const handleSeekStart = () => {
     setIsSeeking(true);
@@ -138,9 +147,7 @@ function AudioPlayer({ generatedAudio }: Props): JSX.Element {
       >
         <div className="audioPlayer_timeline">
           <div
-            className={`audioPlayer_timeline_track ${
-              seekValue === seekMax && "finished"
-            }`}
+            className="audioPlayer_timeline_track"
             style={{
               width: `${
                 seekValue === seekMax
@@ -156,7 +163,11 @@ function AudioPlayer({ generatedAudio }: Props): JSX.Element {
             <div
               className="audioPlayer_nib"
               style={{
-                left: `${nibPosition * 100}%`,
+                left: `${
+                  seekValue === seekMax
+                    ? "100"
+                    : (Math.floor(seekValue) / seekMax) * 100
+                }%`,
                 transform: "translateX(-6px)",
               }}
             ></div>
@@ -175,6 +186,10 @@ function AudioPlayer({ generatedAudio }: Props): JSX.Element {
       >
         Stop
       </button> */}
+      <DownloadButton
+        generatedAudio={generatedAudio}
+        transcriptionId={transcriptionId}
+      />
     </AudioPlayerStyle>
   );
 }

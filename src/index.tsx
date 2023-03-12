@@ -81,37 +81,6 @@ function App(): JSX.Element {
     }
   }
 
-  interface DownloadButtonProps {
-    audioUrl: string;
-  }
-
-  function DownloadButton({ audioUrl }: DownloadButtonProps): JSX.Element {
-    const handleDownload = async () => {
-      try {
-        const response = await fetch(audioUrl);
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "synthesised-audio.wav";
-        link.click();
-        URL.revokeObjectURL(url);
-      } catch (error) {
-        console.error(error);
-        alert("Error downloading audio file. Please try again later.");
-      }
-    };
-
-    return (
-      <button
-        className="mt-4 inline-flex justify-center rounded-md border-2 border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 outline-none focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-opacity-50 focus-visible:outline-none"
-        onClick={handleDownload}
-      >
-        Download
-      </button>
-    );
-  }
-
   const [isDisabled, setIsDisabled] = React.useState<boolean>(true);
 
   React.useEffect(() => {
@@ -148,10 +117,14 @@ function App(): JSX.Element {
         </form>
         <div id="download-container" className="mt-4"></div>
         {!audioIsLoading && generatedAudioElement && (
-          <AudioPlayer generatedAudio={generatedAudioElement} />
+          // <audio controls src={generatedAudioElement.src} />
+          <AudioPlayer
+            generatedAudio={generatedAudioElement}
+            transcriptionId={transcriptionId}
+          />
         )}
         {/* <AudioPlayer generatedAudio={dummyAudioElement} /> */}
-        {audioUrl && <DownloadButton audioUrl={audioUrl} />}
+        {/* {audioUrl && <DownloadButton audioUrl={audioUrl} />} */}
       </div>
     </ThemeProvider>
   );
