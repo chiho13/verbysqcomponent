@@ -13,7 +13,7 @@ export const GenerateButtonStyle: StyledComponent<
   align-items: center;
   background-color: #fff;
   color: #777777;
-  border: 1px solid #cccccc;
+  border: 2px solid #dddddd;
   font-weight: bold;
   padding: 8px 16px;
   border-radius: 0.25rem;
@@ -30,6 +30,6 @@ export const GenerateButtonStyle: StyledComponent<
   &:disabled {
     opacity: 0.5;
     pointer-events: none;
-    border: 1px solid #eeeeee;
+    border: 2px solid #eeeeee;
   }
 `;

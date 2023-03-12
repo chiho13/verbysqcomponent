@@ -7,7 +7,7 @@ export const AudioPlayerStyle: StyledComponent<"div", any> = styled.div`
   max-width: 500px;
   padding: 20px;
   border-radius: 8px;
-  border: 1px solid #eeeeee;
+  border: 2px solid #eeeeee;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   background: ${(props) => props.theme.background.white};}
 
