@@ -11,32 +11,52 @@ export const AudioPlayerStyle: StyledComponent<"div", any> = styled.div`
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   background: ${(props) => props.theme.background.white};}
 
-  
+  .audioPlayer_current-time, .audioPlayer_max-time {
+    font-size: 14px;
+    margin-left: 10px;
+  }
+    
+  .audioPlayer_timeline_container {
+    position: relative;
+    top: 1px;
+    height: 20px;
+    width: 100%;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    margin-left: 16px;
+
+    &:hover .audioPlayer_timeline_track {
+        background-color: ${(props) => props.theme.colors.brand};
+      }
+  }
+
   .audioPlayer_timeline {
     width: 100%;
-    height: 5px;
+    height: 6px;
     background-color: #cccccc;
     position: relative;
     cursor: pointer;
-    border-radius: 2px;
-    margin-left: 10px;
-
-    &:hover .audioPlayer_timeline_track {
-      background-color: ${(props) => props.theme.colors.brand};
-    }
+    border-radius: 3px;
+   
   } 
 
 
 
   .audioPlayer_timeline_track {
-    height: 5px;
+    height: 6px;
     background-color: #777777;
     position: absolute;
     top: 0;
     left: 0;
-    border-top-left-radius: 2px;
-    border-bottom-left-radius: 2px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
     -webkit-backface-visibility: hidden
+
+    .finished & {
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
+    }
   }
 
   .audioPlayer_nib {

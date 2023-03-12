@@ -35,8 +35,13 @@ function AudioPlayer({ generatedAudio }: Props): JSX.Element {
         setSeekMax(generatedAudio.duration);
       };
 
+      const handleEnded = () => {
+        setIsPlaying(false);
+      };
+
       generatedAudio.addEventListener("timeupdate", handleTimeUpdate);
       generatedAudio.addEventListener("loadedmetadata", handleLoadedMetadata);
+      generatedAudio.addEventListener("ended", handleEnded);
       // generatedAudio.addEventListener("play", handlePlay);
       // generatedAudio.addEventListener("pause", handlePause);
 
@@ -46,6 +51,7 @@ function AudioPlayer({ generatedAudio }: Props): JSX.Element {
           "loadedmetadata",
           handleLoadedMetadata
         );
+        generatedAudio.removeEventListener("ended", handleEnded);
         // generatedAudio.removeEventListener("play", handlePlay);
         // generatedAudio.removeEventListener("pause", handlePause);
       };
@@ -99,6 +105,13 @@ function AudioPlayer({ generatedAudio }: Props): JSX.Element {
     generatedAudio?.pause();
   };
 
+  const formatTime = (timeInSeconds: number) => {
+    const date = new Date(timeInSeconds * 1000);
+    const minutes = date.getUTCMinutes();
+    const seconds = date.getSeconds().toString().padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  };
+
   return (
     <AudioPlayerStyle>
       <button
@@ -107,30 +120,48 @@ function AudioPlayer({ generatedAudio }: Props): JSX.Element {
       >
         {isPlaying ? <PauseIcon theme={theme} /> : <PlayIcon theme={theme} />}
       </button>
+
+      <div className="audioPlayer_current-time">
+        {formatTime(Math.floor(seekValue))}
+      </div>
+
       <div
-        className="audioPlayer_timeline"
+        className="audioPlayer_timeline_container"
         onMouseDown={handleSeekStart}
         onMouseUp={handleSeekEnd}
         onMouseMove={handleSeekMove}
         onMouseOver={handleMouseOver}
         onMouseLeave={handleMouseLeave}
       >
-        <div
-          className="audioPlayer_timeline_track"
-          style={{
-            width: `${(seekValue / seekMax) * 100}%`,
-          }}
-        ></div>
-        {/* {showNib && <div className="audioPlayer_nib"></div>} */}
-        {showNib && (
+        <div className="audioPlayer_timeline">
           <div
-            className="audioPlayer_nib"
+            className={`audioPlayer_timeline_track ${
+              seekValue === seekMax && "finished"
+            }`}
             style={{
-              left: `${nibPosition * 100}%`,
-              transform: "translateX(-6px)",
+              width: `${
+                seekValue === seekMax
+                  ? "100"
+                  : (Math.floor(seekValue) / seekMax) * 100
+              }%`,
+              borderTopRightRadius: `${seekValue === seekMax ? "3px" : "0"}`,
+              borderBottomRightRadius: `${seekValue === seekMax ? "3px" : "0"}`,
             }}
           ></div>
-        )}
+          {/* {showNib && <div className="audioPlayer_nib"></div>} */}
+          {showNib && (
+            <div
+              className="audioPlayer_nib"
+              style={{
+                left: `${nibPosition * 100}%`,
+                transform: "translateX(-6px)",
+              }}
+            ></div>
+          )}
+        </div>
+      </div>
+      <div className="audioPlayer_max-time">
+        {formatTime(Math.floor(seekMax))}
       </div>
 
       {/* <button

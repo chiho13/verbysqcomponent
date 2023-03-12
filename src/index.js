@@ -19,7 +19,7 @@ const theme = {
     white: "#ffffff",
   },
   background: {
-    white: "linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%)",
+    white: "linear-gradient(120deg, #fdfbfb 0%, #f2f6f7 100%)",
   },
 };
 
@@ -136,10 +136,10 @@ function App() {
           />
         </form>
         <div id="download-container" className="mt-4"></div>
-        {/* {!audioIsLoading && generatedAudioElement && (
-        <AudioPlayer generatedAudio={generatedAudioElement} />
-      )} */}
-        <AudioPlayer generatedAudio={dummyAudioElement} />
+        {!audioIsLoading && generatedAudioElement && (
+          <AudioPlayer generatedAudio={generatedAudioElement} />
+        )}
+        {/* <AudioPlayer generatedAudio={dummyAudioElement} /> */}
         {audioUrl && <DownloadButton audioUrl={audioUrl} />}
       </div>
     </ThemeProvider>
